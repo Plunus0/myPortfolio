@@ -1,0 +1,21 @@
+	.note{
+		text-align: left;
+	}
+	td{
+		text-align: center;
+	}
+	th,td{
+		background: rgba(0,0,0,0.2);
+	}
+	a {text-decoration: none; color: black;}
+	#firstline>th {
+		background: rgba(255,255,255,0.5);
+	}
+		table{
+		margin: 0px auto;
+	}
+	#writeBtn{
+		position: absolute;
+		top: 575px;
+		left: 10px;
+	}
