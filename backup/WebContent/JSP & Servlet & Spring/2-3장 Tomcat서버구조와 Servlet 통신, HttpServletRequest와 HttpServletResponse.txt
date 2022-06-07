@@ -1,0 +1,43 @@
+[Servlet과 통신 방법]
+<HttpServletRequest>
+javax.servlet.http.HttpServletRequest 패키지에 속해있다.
+사용자가 브라우저 주소창에 URL을 입력하여 호출하면 Tomcat은 HttpServletRequest 객체를 생성 후 요청한 정보를 담아 실행하려는 main 메서드의 HttpServletRequest타입의 매개변수값으로 전달해준다.
+* 예시 : public void main(HttpServletRequest request)
+* Terminal을 통해 java 인터프린터가 매개변수를 넘겨주는 것과 동일
+
+<HttpServletResponse>
+javax.servlet.http.HttpServletResponse 패키지에 속해있다.
+IOException이 발생하기 때문에 반드시 예외처리를 반드시 해주어야 한다.
+HttpServletRequest와 마찬가지로 매개변수를 작성만 해도 Tomcat이 자동으로 객체를 만들어준다.
+HttpServletResponse는 출력결과를 Http문서로 반환하는 객체이다.
+* 예시 : public void main(HttpServletResponse response)
+
+<Tomcat 서버 내부 구조>
+Server > Service > Connector, Engine( > Host > Context > Servlet 작업 실행)
+* Host는 여러개를 설정 할 수 있다.
+* Context는 하나의 Web App이며, 여러개가 있을 수 있다. (Context = STS프로젝트)
+* Servlet = 컨트롤러로 지정해준 클래스, 여러개가 있을 수 있다.
+* 작업 순서
+클라이언트의 요청 > Server(Tomcat) 내부 Thread가 Service에서 일치하는 Protocol에 맞는 Connector로 연결(ThreadPoll에서 미리 Thread들을 만들어 놓음) > Connector에서 실제로 처리하는 Engine(Catalina)에 전달 > 일치하는 Host로 이동 > 일치하는 Context로 이동 > Filter로 전처리 > 일치하는 Dispatcher Servlet이 Controller의 main메서드를 호출하여 작업을 수행 후 클라이언트에 결과를 돌려준다.
+
+<Tomcat의 설정파일 : server.xml, web.xml>
+- server.xml
+> Tomcat설치경로/conf/server.xml : Tomcat 서버 설정 파일
+* Connector : protocol, default port번호 등을 설정 가능
+* Engine : 여러 Host를 포함할 수 있으며, defaultHost를 정할 수 있다.
+* Realm : 보안용어를 설정
+* Host : Host이름 지정, webapps(WAR파일 저장위치) 설정 ,unpackWARs(WAR파일의 자동 압축해제여부 지정) 설정
+* Context : path(STS프로젝트) 설정, reloadalbe(소스파일의 내용이 변경됐을 경우 자동 리로드) 설정
+
+- web.xml
+> 1. Tomcat설치경로/conf/web.xml : Tomcat의 모든 webapp의 공통설정
+* 해당 설정은 Tomcat내부에 복사하여 Server별로 구분할 수 있고, 실제 File을 직접 수정하여 전체 설정으로 적용시킬 수 있다.
+* servlet : servlet 등록(=스프링에서는 어노테이션으로 대체됨, @Controller)
+* servlet-mapping : URL 연결, servlet이름과, pattern을 설정할 수 있다.(=스프링에서는 어노테이션으로 대체됨, @RequestMapping)
+
+> 2. src/main/webapp/WEB-INF/web.xml : webapp의 개별설정
+* Context설정, Listener설정, servlet설정, servlet-mapping설정이 가능하다.
+
+<Tomcat에 Server Library 추가하기>
+프로젝트폴더 > Build Path > Configure Build Path > Libraries tab > Classpath 선택 후 Add Library > server Runtime > 해당하는 버전의 Tomcat선택
+* WebServlet 어노테이션을 사용할 수 있다.

@@ -1,0 +1,159 @@
+<JSP : Java Server Pages>
+HTML 내부에 Java Code를 활용하는 것
+변환과정에 의해 JSP로 변환되며, 메서드영역(<% ~ %>), 출력영역(<%= ~ %>)은 servlet의 service메서드 내부로 들어간다.
+확장자는 .jsp이며 실행순서는 .jsp > jsp엔진 > 서블릿.java > 컴파일러 > .class(바이트코드) > 인터프리터 > 실행
+* service 메서드로 들어가기 떄문에 여기서 선언된 값은 lv(지역변수)가 된다, iv(인스턴스변수) 혹은 cv(클래스변수) 선언은 클래스영역(<%! ~ %>)에서 진행해야한다. 선언부는 클래스 내부에 들어간다.
+Java코드는 그대로 들어가고 HTML 코드는 out.print(<HTML>)로 변환됨
+JSP파일의 저장/생성위치는 프로젝트폴더 > src > main > webapp > *.jsp
+* webapp 폴더 우클릭 New > Other > jsp 검색 후 생성
+
+<이클립스에서 JSP설치하기>
+1. 기타 작업 설정
+2. 우측 상단에서 Open Perspective > JavaEE(default)
+3. 하단 서버창에서 new > Server > apache > 설치된톰캣서버
+4. file > new > dynamic web project > 프로젝트 이름입력 > 저장경로 설정 > Context root는 프로젝트명과 동일하게 입력 > Content directory는 WebContent 입력+체크박스 체크
+
+<JSP의 제공기술 : 동적 데이터>
+스크립트릿은 웹 컨테이너(웹서버)에 의해 실행되고
+실행된 결과는 스크립트릿이 포함된 위치에 저장되며
+HTML태그와 함께 클라이언트에게 전송된다.
+
+<JSP파일의 호출과정>
+JspServlet은 싱글톤 객체이다.
+
+- 서블릿 인스턴스가 존재하지 않을 때(첫 번째 호출 또는 jsp파일 변경 시)
+1. *.jsp 파일을 서블릿 소스파일(*_jsp.java)로 변환
+2. 소스파일을 컴파일하여 서블릿 클래스 파일(*_jsp.class)로 만들어 준다.
+3. 인스턴스 생성 후(_jspInit( ) 초기화 메서드 호출)
+4. 서블릿 객체가 만들어지면 _jspService( ) 메서드 호출
+
+- 서블릿 인스턴스가 존재할 때
+1. _jspService( ) 메서드 호출
+
+<html문서 내에서 JAVA코드 사용하기(Script)>
+1. 지시자(Directive) : 각종 문서의 설정과 지시자 입력 등을 입력, WAS가 해석하며 이 문구가 없을 경우 문자가 깨지는 현상이 발생한다.
+<%@ page / include / taglib %>
+
+* 지시자표기에 에러가 발생했을 때 대처
+Java Resources > src 우클릭 > Build Path > Configure Build Path > Libraries tab > Classpath에 Add Library > Server Runtime > 설치된 Tomcat 선택 및 적용
+
+- 지시자의 종류와 역할
+> page : 페이지 인코딩 형식, 패키지 임포트 등의 내용 지시
+> include : 다른 jsp 파일을 포함시킬 때 사용, 경로는 상대경로로 줘야한다.(<jsp:include>로 대체되는 중)
+> taglib : JSTL 활용 시 태그라이브러리 사용을 정의
+
+- 지시어의 종류
+autoFlush : 전송될 데이터가 저장해 놓는 장소를 출력버퍼라고 하는데, 버퍼가 찼을 때 자동으로 비워준다.
+contentType : MIME타입을 지정(MIME는 통신규약이다.)
+session : 세션객체 생성 설정여부(true/false default는 true)
+buffer : 출력크기 지정
+info : JSP페이지에 대한 설명을 텍스트로 입력할 때 사용
+errorPage : 에러발생 시 보여줄 페이지 지정
+isErrorPage : 현재 페이지가 에러 페이지인지의 여부를 지정(true/false)
+isELIgnored : 표현언어를 사용여부(true(미지원)/false)
+pageEncoding : 사용언어를 설정
+import : import한다. , 를 사용해 여러개의 import를 시킬 수 있다.(java.lang 패키지는 import하지 않아도 된다.)
+
+2. 선언자(Declarations) : 변수와 상수를 전역으로 선언하는 경우 사용, final, static 등으로 도중에 값이 변경되지 않도록 해놓는다.
+<%! 자바코드 %>
+
+3. 스크립트릿(Scriptlet) : 자바 코드를 입력하는 경우 사용, 지역변수 선언과 코드 출력 둘다 가능하다.(중간중간 삽입하여 필요할때마다 사용)
+<% 자바코드 %>
+
+4. 표현식(Expressions) : 변수의 값과 수식의 값을 html페이지로 표현할 때 사용하는 식, 문장 종료시 ; 를 붙이지 않는다. (EL로 대체할 수 있다.)
+<%= 값, 변수, 메서드 %>
+* 기능은 out.print( )와 비슷하다.
+* 표현식에서는 out.print( )를 사용하지 않는다.
+
+5. Action Element Tag(=JSP Tag) : 자바빈(dto, vo, dao ..) 객체와 연동시 사용, 요청받은 파라미터를 자동으로 담는 역할을 한다.
+* 자바빈 : 자바를 이용해 만들어진 클래스파일들
+
+- 자바빈 클래스 생성
+프로젝트폴더 > Java Resources > src > 패키지생성(com.이름.VO or DTO ..) > 패키지 내부에 로직 별 소스 생성
+* 데이터를 저장하는 객체 : VO(Value Object), DTO(Data Transfer Object)
+* 데이터베이스와 연동하는 객체 : DAO(DataBase Access Object)
+
+- 자바빈 사용
+<jsp:useBean ~ /> : 사용할 자바빈을 설정
+* id="자바빈객체이름" class="패키지명.자바빈클래스이름"
+<jsp:setProperty ~ /> : 객체의 속성을 설정
+* name="담을자바빈객체" property="객체의속성이름or*" (와일드카드(*)으로 작성하면 파라미터로 넘어온 값이 그대로 객체에 저장된다. 
+<jsp:include ~ /> : 
+
+* </jsp:~>와 />로 닫는 태그의 차이점은 중간에 로직이 들어가지 않을 경우 />로 닫을 수 있다.
+* JSP에서 주석 : <%-- --%>
+
+<JSP의 Built in Object(기본/내장객체)>
+ _jspService의 지역변수로 미리 선언이 되어있는 기본객체들로 객체를 별도로 생성하지 않아도 사용이 가능하다.
+서버(JSP엔진)에서 객체를 미리 생성하여 서버 실행시 메모리에 로딩 해놓음
+JSP엔진에서 JSP파일을 서블릿 파일로 변환할 때 자동으로 호출하여 맵핑
+빌트인 객체에 정의된 클래스나 메서드는 Java EE API를 참조 
+
+- 선언된 기본객체의 종류(Scope)
+> javax.servlet.http.HttpServletRequest request : 클라이언트가 서버에게 요청하는 요청 정보가 담겨있는 객체
+> javax.servlet.http.HttpServletResponse response :
+클라이언트가 서버에게 요청한 처리를 수행한 후 결과값을 전송할 때 사용
+> javax.servlet.http.HttpSession session : HTTP session을 구현한 객체.
+세션 정보 저장에 사용, 로그인/로그아웃 기능 등의 인증정보를 저장하는 역할을 하며 유지기간을 설정할 수 있다.(Tomcat 기본 30분)
+브라우저 종료 시 자동 삭제된다.
+
+> javax.servlet.ServletContext application : Web Application 전체에서 현재 사용중인 프로젝트를 Web Application 전체(JSP코드)에서 공유/참조하는 객체이다.
+> javax.servlet.ServletConfig config : 현재 프로젝트(JSP페이지)에 대한 환경설정 정보가 담긴 객체
+> java.lang.Object page : This와 비슷한 의미로 서블릿으로 변경된 JSP페이지 객체 자신을 참조하는 변수
+> javax.servlet.jsp.pageContext pageContext : JSP페이지의 context정보를 제공
+> javax.servlet.jsp.JspWriter out : 실행한 결과를 클라이언트에 출력할 때 사용
+> java.lang.Throwable exception : 예외가 발생했을 때 생성되는 예외 객체, 단 <%@ page 에서는 사용이 불가하다.
+
+<기본 객체들의 주요 메서드>
+out.print(x) : x를 JSP페이지로 출력한다.
+
+- HttpServletRequest의 메서드(기본객체로 객체명은 request)
+[예시]http://52.78.79.190:8080/ch2/requestInfo?year=2021&month=10&10day=1
+
+> getCharacterEncoding( ) : 요청 내용의 인코딩
+> getContentLength( ) : 요청 내용의 길이, 알 수 없을 때는 -1
+> getContentType( ) : 요청 내용의 타입, 알 수 없을 때는 null
+
+> getMethod( ) : 요청 방법 (GET 또는 POST 등)
+> getProtocol( ) : 프로토콜의 종류와 버전 HTTP/1.1
+> getScheme( ) : 프로토콜 (http)
+
+> getServerName( ) : 서버 이름 또는 ip주소 (52.78.79.190)
+> getServerPort( ) : 서버 포트 (8080)
+> getRequestURI( ) : 요청 URI (/ch2/requestInfo)
+> getRequestURL( ) : 요청 URL (http://52.78.79.190:8080/ch2/requestInfo)
+
+> getContextPath( ) : Context Path (/ch2)
+> getServletPath( ) : Servlet Path (/requestInfo)
+> getQueryString( ) : 질의 내용, name과 value로 구분되어 있다. (year=2021&month=10&10day=1)
+* QueryString의 내용은 구분자(&)로 구분할 수 있다.
+
+> getParameter("year") : QueryString 중 year에 해당하는 String값 반환 (2021)
+> getParameterNames( ) : 질의 내용 중 name에 해당 하는 값만 반환 (Iterator 객체에 저장하여 읽을 수 있다.)
+> getParameterMap( ) : 질의 내용을 Map형태로 반환한다. (Map 객체에 저장)
+> getParameterValues("year") : name값에 중복이 있을 경우 해당 값들을 String배열로 반환
+
+> getLocalName( ) : 로컬 이름
+> getLocalPort( ) : 로컬 포트
+
+> getRemoteAdder( ) : 원격 ip주소
+> getRemoteHost( ) : 원격 호스트 또는 ip주소
+> getRemotePort( ) : 원격 포트
+
+> getHeaderNames( ) : 요청받는 Headers들을 반환 (Iterator 객체에 저장하여 읽을 수 있다.)
+> getHeaderNames( )
+
+> getSession().getServletContext().getRealPath("/") : 클라이언트가 업로드한 파일이 서버에 저장된 경로를 String으로 반환
+* \\resources\\upload\\를 추가하여 경로를 완성한다.
+
+
+- HttpServletResponse로 브라우저에 출력하는 메서드
+1. response.setContextType("text/html") : 출력할 타입을 지정해준다. ("text/html")
+2. response.setCharacterEncodeing("utf-8") : 출력할 인코딩을 지정해준다. ("utf-8")
+3. PrintWriter out = response.getWriter( ) : response객체에서 브라우저로의 출력 스트림을 얻는다.
+* PrintWriter는 java.io 패키지에 속해있다.
+4. out.println( ) 으로 출력, 내부에는 HTML형식으로 지정해준다.
+* out 변수는 PrintWriter 객체로 만든 것
+
+- HttpServletResponse의 메서드
+response.sendRedirect("URL") : 해당 페이지를 Redirect한다.

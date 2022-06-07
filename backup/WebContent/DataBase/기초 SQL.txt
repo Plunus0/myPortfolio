@@ -1,0 +1,37 @@
+SQL 스키마의 구성요소
+테이블, 제약조건, 뷰, 도메인
+
+**SQL용어
+시스템 카탈로그 : 스키마들의 모음으로 DB내 모든 메타데이터 관리
+(INFORMATION_SCHMA : )
+스키마(schema) : 스키마 : 메타데이터
+-동일 DB에 있는 "관련된" 테이블 및 구성요소들(구성 : 테이블,제약조건,뷰,도메인)
+릴레이션(relation) : 테이블 : 파일
+속성(attribute) : 열/컬럼 : 필드
+튜플(tuple) : 행 : 레코드
+
+데이터 정의어(DDL) : 테이블 내 구조생성
+CREATE : 생성
+ALTER : 변경
+DROP : 제거
+
+데이터 조작어(DML) : 테이블 내 데이터의 검색,변경
+SELECT/QUERY :  검색/질의
+INSERT : 삽입
+DELETE : 삭제
+UPDATE : 변경
+
+데이터 제어어(DCL) : 데이터의 사용권한 관리
+GRANT : 권한 부여
+REVOKE : 권한 취소
+
+데이터 변경 작업 완료시 실행 : commit:
+작업 취소시 : rollback
+
+데이터 조작어 – 질의: SELECT 문 사용
+SELECT-FROM[-WHERE-GROUP BY-ORDER BY]로 구성
+WHERE절: 조건을 나타내며, 일치, 범위(비교, BETWEEN), 패턴 (LIKE) 등을 지정할 수 있음
+집계: GROUP BY 동반 (SUM, COUNT, MIN, MAX, MEDIAN, STDEV) / HAVING: 그룹 선택 조건 지정
+조인 연산: 내부 조인, 외부 조인(LEFT OUTER, RIGHT OUTER, FULL OUTER) 등
+하위 질의: 질의 내에 있는 또 다른 질의
+상호 연관 질의: EXISTS 활용

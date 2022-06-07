@@ -1,0 +1,23 @@
+<StringTokenizer클래스>
+java.util에 속한 클래스
+하나의 문자열을 여러개의 문자열로 분리하기 위해서 사용된다.
+String클래스의 splite() 메서드와 동일한 기능구현이 가능하다.
+분리기준 구분문자(delimiter)라 부르고, 분리된 문자열을 토큰(token)이라 한다.
+
+<StringTokenizer의 생성자>
+StringTokenizer st = new StringTokenizer(String str,구분자); : str을 구분자로 구분하여 정보를 저장한다.
+
+<StringTokenizer의 주요메서드>
+- countTokens( ) : 몇개의 토큰으로 분리되어 있는지 count하여 반환
+- nextTokens( ) : 토큰을 하나씩 얻어내기 위해 다음 토큰을 반환
+- hasMoreTokens( ) : String Tokenizer에 포함된 토큰의 개수를 반환
+
+<StringJoiner 클래스>
+문자열을 구분자를 활용해 연결시켜준다.
+
+<StringJoiner의 생성자>
+StringJoiner sj = new StringJoiner("x","y","z")
+* x=구분자, y=접두사, z=접미사
+
+<StringJoiner의 주요 메서드>
+> add(x) : 연결될 문자열을 추가한다.

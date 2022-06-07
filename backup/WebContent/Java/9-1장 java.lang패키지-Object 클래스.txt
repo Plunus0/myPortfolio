@@ -1,0 +1,52 @@
+<Object클래스>
+java.lang 패키지에 속해있다.
+모든 클래스의 최고 조상이며 오직 11개의 메서드만을 가지고 있다.
+
+- Object클래스의 메서드
+> protected Object clone( ) : 객체 자신의 복사본을 반환한다.
+> protected void finalize( ) : 객체가 소멸될 때 까지 가비지 컬렉터에 의해 자동적으로 호출된다. 이 때 수행되어야하는 코드가 있을 때 오버라이딩한다.(거의 사용안함)
+* 제어자가 protected이므로 오버라이딩을 통해 public으로 변경하여 사용
+
+> public boolean equals(Object obj) : 객체 자신(this)과 주어진 객체(obj)를 비교한다. boolean값 리턴
+* Object클래스의 equals( )는 객체의 주소를 비교(참조변수 값 비교)
+* Object클래스의 equals( ) 예시
+public boolean equals(Object obj) {
+return ( this == obj ) }
+* equals 오버라이딩 예시
+public boolean equals(Object obj) {
+   if ( ! ( obj instanceof ClassName) )
+      return false;
+Class V = (Class)obj; // 형변환
+return this.IV.equals(V.IV) && this.IV==V.IV }
+*cv는 모든 객체가 공통이기에 iv값을 가지고 비교하는게 좋음
+*eqauls( )의 결과가 true인 두 객체의 해시코드는 같아야 하기 때문에 두 메서드는 같이 오버라이딩 해준다.(주소 -> IV)
+
+> public int hashCode( ) : 객체의 해시코드(hashcode)를 반환하는 메서드, Object클래스의 hashCode( )는 객체의 주소를 int로 변환해서 반환
+* hashcode 예시
+public native int hashCode ( ) ;
+*네이티브 메서드 : OS의 메서드(c언어)
+*메서드 내용이 없는것이 특징
+*System.identityHashCode(Object obj)는 Object클래스의 hashCode( )와 동일하다
+* hashCode 오버라이딩 예시
+public int hashCode( ) {
+   return Objects.hash(IV1, IV2, ...) ; }
+*이클립스는 자동으로 오버라이딩 해주는 메뉴가 있음. (Source > hashCode( ) and equals( )) 
+
+> public String toString( ) : 객체 자신의 정보를 문자열로 반환
+* Object의 toSting( ) 예시
+public String toString( ) {
+ return getClass( ).getName( )+"@"+Integer.toHexString(hashCode( )); }
+*Object의 기본적인 toSting메서드는 실용적이지 못해 객체가 가진 IV의 값들을 출력하도록 오버라이딩한다.
+* toString( )의 오버라이딩 : 객체를 문자열(string)으로 변환하기 위한 메서드
+<toString 오버라이딩 예시>
+public String toString( ) { return " IV : " + IV ; }
+
+> public Class getClass( ) : 객체 자신의 클래스 정보를 담고 있는 Class인스턴스를 반환
+
+* 쓰레드 관련 메서드
+> public void notify( ) : 현 객체에 대해 대기중인 하나의 쓰레드를 깨운다.
+> public void notifyAll( ) : 현 객체에 대해 대기중인 모든 쓰레드를 깨운다.
+> public void wait(long timeout, int nanos) :
+다른 쓰레드가 notify( )나 notifyAll( )을 호출할 때까지 현재 쓰레드를 무한히 또는 지정된 시간(timeout, nanos)동안 기다리게 한다.
+* timeout, nanos는 생략가능
+* timeout은 1,000 분의 1초, nanos는 10^9분의 1초

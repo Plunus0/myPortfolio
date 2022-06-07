@@ -1,0 +1,85 @@
+프로그램 오류
+컴파일에러 런타임에러 논리적에러가 있음
+런타임 에러는
+심각한에러(error) or 미약한에러(exception)로 나뉘며 미약한 에러는 Exception과 그 자손들, Runtimeexception과 그 자손들로 나뉨
+
+예외의 종류
+[Exception과 자손]checked예외 : 컴파일러가 예외 처리 여부를 체크(예외 처리 필수) // 사용자가 발생시키는 예외
+[RuntimeException과 자손]unchecked예외 : 컴파일러가 예외 처리 여부를 체크 안함(예외 처리 선택) // 프로그래머의 실수로 발생시키는 예외
+
+에러는 어쩔 수 없지만, 예외는 처리하자.
+에러 : 프로그램 코드에 의해서 수습될 수 없는 심각한 오류
+예외 : 프로그램 코드에 의해서 수습될 수 있는 다소 미약한 오류
+
+예외처리의 정의와 목적
+정의 : 프로그램 실행 시 발생할 수 있는 예외의 발생에 대비한 코드를 작성하는 것
+목적 : 프로그램의 비정상 종료를 막고, 정상적인 실행상태를 유지하는 것
+
+예외처리 방법
+1. try - catch문
+2. 예외 선언하기
+
+예외 처리하기 try - catch문
+try { //예외가 발생할 가능성이 있는 문장들을 넣는다.}
+catch ( Exception1 e1) { Exception1이 발생했을 경우, 이를 처리하기 위한 문장을 넣는다.
+*괄호 생략 불가
+
+try-catch문에서의 흐름
+1. try블럭 내에서 예외가 발생한 경우
+-발생한 예외와 일치하는 catch블럭이 있는지 확인
+-일치하는 catch블럭을 찾게 되면, 그 catch블럭 내의 문장들을 수행하고 전체 try-catch문을 빠져나가서 그 다음 문장을 계속해서 수행한다. 만일 일치하는 catch블럭을 찾지 못하면, 예외는 처리되지 못한다.
+2. try블럭 내에서 예외가 발생하지 않은 경우
+-catch블럭을 거치지 않고 전체 try-catch문을 빠져나가서 수행을 계속한다.
+
+예외가 발생하면 이를 처리할 catch블럭을 찾아 내려감
+일치하는 catch블럭이 없으면, 예외는 처리 안됨
+Exception은 모든 예외의 최고조상이므로 가장 마지막 catch블럭에 둔다
+
+finally 블럭
+예외 발생여부와 관계없이 수행되어야 하는 코드를 넣는다. (try - catch문의 맨 마지막에 넣는다.)
+finally { }
+*try블럭 안에 return문으로 try블럭을 벗어나도 finally블럭이 실행된다.
+
+printStackTrace()와, getMessage()
+printStackTrace() : 예외발생 당시의 호출스택에 있었던 메서드의 정보와 예외 메세지를 화면에 출력한다.
+getMessage() : 발생한 예외클래스의 인스턴스에 저장된 메세지를 얻을 수 있다.
+
+멀티 catch블럭
+내용이 같은 catch블럭을 하나로 합침(JDK 1.7부터)
+catch(ExceptionA | ExceptionB e) { }
+*상속관계의 경우 에러가 발생(조상것만 사용하면 됨)
+*두 예외의 공통멤버만 사용가능
+*사용가능하려면
+instanceof로 타입을 체크하고 수동 형변환 후 사용
+
+예외 발생시키기
+1. 연산자 new를 이용해서 발생시키려는 예외 클래스의 객체를 생성
+Exception e = new Exception("Message작성");
+2. 키워드 throw를 이용하여 실행
+throw e;
+
+메서드에 예외 선언하기
+메서드가 호출시 발생가능한 예외를 호출하는 쪽에 알리는 것
+
+오버라이딩
+1. 선언부 일치
+2. 접근제어자 폭이 좁아질 수 없음
+3. 조상보다 많은 종류의 예외 선언 불가
+
+사용자 정의 예외 만들기
+직접 예외 클래스를 정의 가능
+1. 조상은 Exception과 RuntimeException중에서 선택하기(예외를 선택처리 가능한 RuntimeException이 유리)
+2. String타입 매개변수 생성자를 작성
+
+예외 되던지기 (Exception re-throwing)
+예외를 처리한 후에 다시 예외를 발생시키는 것
+호출한 메서드와 호출된 메서드 양쪽 모두에서 예외처리하는 것
+
+연결된 예외 (chained Exception)
+한 예외가 다른 예외를 발생시킬 수 있다.
+예외 A가 예외 B를 발생시키면 A는 B의 원인 여러 예외를 하나로 묶어서 다루기 위해서
+checked예외를 unchecked예외로 변경하려 할 때(Runtime Exception작성 후 포함시키기)
+
+예외(Cause Exception)
+Throwable initCause(Throwable cause) : 지정한 예외를 원인 예외로 등록
+Throwable getCause() : 원인 예외를 반환

@@ -1,0 +1,46 @@
+<삽입문구>
+INSERT INTO 테이블이름(속성리스트)
+VALUES(값리스트)
+;
+
+INSERT : 테이블에 새로운 튜플을 삽입하는 명령
+
+TO_DATE : 날짜형 내장함수
+
+*질의결과를 새로운 테이블에 삽입
+1.
+CREATE TABLE WORKS_ON_INFO(
+Emp_Name VARCHAR(15),
+Prj_Name VARCHAR(15),
+Hours_week NUMBER(3,1));
+
+INSERT INTO WORKS_ON_INFO (Emp_Name, Prj_Name, Hours_Week)
+SELECT Lname, Pname, Hours
+FROM Project P, Works_On W, Employee e
+WHERE P.pNumber = W.Pno AND W.Essn = E.ssn;
+----------------------------
+2.
+--When WORKS_ON_INFO is absent
+CREATE TABLE WORKS_ON_INFO AS
+SELECT E.Lname, P.Pname, W.Hours
+FROM PROJECT P, WORKS_ON W, EMPLOYEE E
+WHERE P.Pnumber = W.Pno AND W.Essn = E.Ssn;
+
+*대량적재 : 한번에 다수의 행들을 입력
+CREATE TABLE D5EMPS AS
+(SELECT E.*
+FROM EMPLOYEE E
+WHERE E.Dno=5);
+
+<삭제문구>
+DELETE FROM 테이블이름
+(WHERE 검색조건);
+
+<갱신문구>
+UPDATE 테이블이름
+SET 속성이름 1=값 1(, 속성이름 2=값 2, ~)
+ex)
+UPDATE PROJECT p
+SET p.Plocation = 'Bellaire',
+     p.Dnum = 5
+WHERE p.Pnumber=10

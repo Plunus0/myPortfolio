@@ -1,0 +1,102 @@
+지네릭스(Generics)
+컴파일시 타입을 체크해 주는 기능(compile-time type check)
+타입체크 강화, 형변환 생략 가능
+다형성에 변화는 없음(타입변수(E)에는 다형성x)
+일반클래스 > 지네릭클래스
+**클래스 안에 Object타입을 갖는경우 지네릭스는 무조건**
+
+타입변수
+지네릭 클래스를 작성할 때, Object타입 대신 타입변수(E)를 선언해서 사용
+
+타입 변수에 대입하기
+객체 생성시, 타입 변수(E) 대신 실제 타입(Tv)을 지정(대입)
+ArrayList<Tv> tvList = new ArrayList<Tv>( );
+*타입과 생성자에 모두 작성해야함
+*JDK 1.7부터 생성자쪽의 지네릭스 타입변수 생략가능( < >만 씀)
+타입 변수 대신 실제 타입이 지정되면, 형변환 생략가능
+
+지네릭스 용어
+Box<T> 지네릭 클래스, 'T의 Box' 또는 'T Box'
+T 타입 변수 또는 타입 매개변수.(타입문자)
+Box 원시타입(raw type)
+
+지네릭 타입과 다형성
+참조 변수와 생성자의 대입된 타입은 일치해야한다.
+ArrayList<Tv> list = new ArrayList<TV>( );
+
+지네릭 클래스간의 다형성은 성립.(여전히 대입된 타입은 일치해야함)
+List<Tv> list = new ArrayLost<Tv>( );
+
+매개변수의 다형성도 성립
+ArrayList<Product> list = newArrayList<Product>( );
+list.add(new Product( ));
+list.add(new Tv( ));
+list.add(new Audio( ));
+boolean add(E e) > boolean add(prooduct e)
+
+Iterator<E>
+클래스를 작성할 때, Object타입 대신 T와 같은 타입변수를 사용
+
+HashMap<K, V>
+여러개의 타입 변수가 필요한 경우, 콤마( , )를 구분자로 선언(interface와 같이 작성시 ( , )가 아닌 (&)를 사용)
+타입 변수를 지정 후 지정된 타입이 순서대로 맞지 않을 경우 에러 발생
+
+제한된 지네릭 클래스
+클래스 생성시, extends로 대입할 수 있는 타입을 제한
+class FruitBox<T extends Fruit> { } // Fruit의 자손만 타입으로 지정가능
+
+인터페이스인 경우에도 extends를 사용
+interface Eatable { }
+class FruitBox<T extends Eatable> { }
+
+지네릭스의 제약
+객체생성시 타입 변수에 대입은 인스턴스 별로 다르게 가능하므로 클래스 생성시 static멤버에 타입 변수 사용 불가
+
+객체, 배열 생성할 때 타입 변수 사용 불가. 타입 변수로 배열 선언은 가능(new연산자는 뒤의 타입이 확정되어 있어야함)
+class Box<T>{
+T[ ] toArray( ){ //가능
+T[ ] tmpArr = new T[ ](itemArr.length]; // 에러
+
+와일드카드 <?>
+객체 생성시 하나의 참조 변수로 대입된 타입이 다른 객체를 참조가능
+
+<? extends T> : 와일드 카드의 상한제한. T와 그 자손들만 가능
+<? super T> : 와일드 카드의 하한제한. T와 그 조상들만 가능
+<?> : 제한 없음. 모든 타입이 가능. <? extends Object>와 동일
+
+ArrayList<? extends Product>> list = new ArrayList<Tv>( );
+
+메서드의 매개변수에 와일드 카드를 사용
+static Juice makeJuice(FruitBox<? extends Fruit> box) {
+String tmp = " ";
+for(Fruit f : box.getList( )) tmp += f + " ";
+return new Juice(tmp); }
+
+지네릭 메서드
+지네릭 타입이 선언된 메서드(타입 변수는 메서드 내에서만 유효)
+static <T> void sort(List<T> list, Comparator<? super T> c)
+
+클래스의 타입 매개변수<T>와 메서드의 타입 매개변수 <T>는 별개
+class FruitBox<T> { // 지네릭 클래스
+static <T> void sort(List<T> list, Comparator<? super T> c)} // 지네릭 메서드
+
+메서드를 호출할 때마다 타입을 대입해야함(대부분 생략 가능)
+
+static <T extends Fruit> Juice makeJuice(FruitBox<T> box) { }
+<같은의미 == 용도가 조금 다름>
+static Juice makeJuice(FruitBox<? extends Fruit> box) { }
+*와일드 카드는 하나의 참조변수로 서로 다른 타입이 대입된 여러 지네릭 객체를 다루기 위한것
+*지네릭 메서드는 메서드를 호출할 때마다 다른 지네릭 타입을 대입할 수 있게 한 것
+
+메서드를 호출할 때 타입을 생략하지 않을 때는 클래스 이름 생략 불가
+
+지네릭 타입의 형변환
+지네릭 타입과 원시 타입 간의 형변환은 바람직 하지 않다.(경고 발생)
+지네릭 타입간에도 서로 다른 지네릭 타입이 선언되었다면 형변환 불가능
+와일드카드가 사용된 지네릭타입으로는 형변환 가능(다형성)//반대도 가능하다. 형변환 생략불가
+
+지네릭 타입의 제거
+컴파일러는 지네릭 타입을 제거하고, 필요한 곳에 형변환을 넣는다.
+1. 지네릭 타입의 경계(bound)를 제거
+2. 지네릭 타입 제거 후 타입이 불일치할 경우 형변환 추가
+3. 와일드 카드가 포함된 경우, 적절한 타입으로 형변환 추가

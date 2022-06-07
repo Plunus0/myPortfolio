@@ -1,0 +1,185 @@
+<날짜와 시간>
+java.util.Date클래스
+날짜와 시간을 다룰 목적으로 만들어진 클래스(JDK1.0)
+Date의 메서드는 거의 deprecated되었지만, 여전히 쓰이고 있다.
+java.util.Calendar클래스
+Date클래스를 개선한 새로운 클래스(JDK1.1) 여전히 단점이 존재
+java.time패키지
+Date와 Calendar의 단점을 개선한 새로운 클래스들을 제공(JDK1.8)
+
+<Calendar클래스>
+java.util 패키지에 있는 클래스
+컴퓨터 System의 시간정보를 가져온다.
+추상 클래스이므로 Calendar.getlnstance( )를 통해 구현된 객체를 얻어야 한다.
+년, 월, 일, 시, 분, 초, 밀리초까지 정보생성을 한다.
+
+get( ) 으로 날짜와 시간 필드 가져오기 - int get(int field)
+Calendar cal = Calendar.getInstance( ); // 현재 날짜와 시간으로 셋팅됨
+int thisYear = cal.get(Calendar.YEAR); // 올해가 몇년인지 반환
+int lastDayOfMonth = cal.getActualMaximum(Calendar.DATE); // 이 달의 마지막 날
+
+<Calendar에 정의된 필드>
+- 날짜
+> YEAR : 년
+> MONTH : 월 (0~11)
+> WEEK_OF_YEAR : 그 해의 몇번째 주
+> WEEK_OF_MONTH : 그 달의 몇번째 주
+> DATE : 일
+> DAY_OF_MONTH : 그 달의 몇번째 일
+> DAY_OF_YEAR : 그 해의 몇번째 일
+> DAY_OF_WEEK : 요일
+> DAY_OF_WEEK_IN_MONTH : 그 달의 몇번째 요일
+
+- 시간
+> HOUR : 시간(0~11)
+> HOUR_OF_DAY : 시간(0~23)
+> MINUTE : 분
+> SECOND : 초
+> MILLISECOND : 천분의 일초
+> ZONE_OFFSET : GMT기준 시차(천분의 일초 단위)
+> AM_PM : 오전(0)/오후(1)
+
+<set( )으로 날짜와 시간지정하기>
+- void set (int field, int value)
+- void set(int year, int month, int date)
+- void set(int year, int month, int date, int hourOfDay, int minute)
+- void set(int year, int month, int date, int hourOfDay, int minute, int second)
+
+- 날짜 지정하는 방법
+*월(MONTH)이 0부터 시작한다는 점에 주의
+Calendar date1 = Calendar.getInstance( );
+date1.set(2017,7,15); // 2017년 8월 15일(7월아님)
+dat1.set(Calendar.YEAR, 2017);
+dat1.set(Calendar.MONTH, 7);
+dat1.set(Calendar.DATE, 15);
+
+- 시간 지정하는 방법
+Calendar time1 = Calendar.getInstance( );
+time1.set(Calendar.HOUR_OF_DAY, 10);
+time1.set(Calendar.MINUTE, 20);
+time1.set(Calendar.SECOND, 30);
+*time1을 10시 20분 30초로 설정(날짜와 달리 각각 설정해야함)
+
+- 날짜 차이 계산
+각 날짜를 변수.getTimeInMillis( ) 메서드로 초단위로 변경
+1000분의 1초로 변환되었으니 1000을 추가로 나눠서 초단위로 변경
+차이 계산 후 (24*60*60)으로 추가로 나눠준다.
+*동전으로 거스름돈 주기 참고
+큰 단위 순서로 나눈 후 그 값을 1차 나눔 후 그 값을 저장 나머지(%)연산자를 활용하여 나머지값 확인 후 다시 반복
+
+clear( )는 Calendar객체의 모든 필드를 초기화
+Calendar dt = Calendar.getInstance( ); // 현재시간
+dt.clear( ); // 모든필드를 초기화 (EPOCH TIME)
+clear(int field)는 Calendar객체의 특정 필드를 초기화
+dt.clear(Calendar.SECOND); // 초를 초기화
+
+add( )는 특정 필드의 값을 증가 또는 감소(다른 필드에 영향O)
+roll( )는 특정 필드의 값을 증가 또는 감소(다른 필드에 영향X)
+
+* 달력 만들기
+1. 구하고자 하는 연도, 월을 변수로 만든다.(입력받아도 되고, 직접 설정해줘도 됨)
+2. 1일의 요일, 해당 월의 끝 일자를 변수로 만들어 초기화시켜준다.
+3. 해당 월의 시작일(sDay)과 끝일(eDay)을 계산할 객체를 각각 생성해준다.
+시작일은 1일, 끝일은 익월의 -1일
+4. 끝일의 날짜를 변수에 저장
+5. 1일의 요일이 무슨 요일인지 확인 후 반환
+Start_day_of_week = sDay.get(Calendar.DAY_OF_WEEK);
+6. 해당 월의 1일이 어느요일인지에 따라서 공백의 갯수를 설정 후 출력(일요일 시작일때)
+for(int i=1; i<Start_day_of_week; i++)
+System.out.print( "   " );
+7. 나머지 날짜를 출력한다.
+for(int i=1, n=Start_day_of_week ; i<=eDay; i++, n++) { system.out.print(( i < 10)? "  "+i : " "+i); // 한자리 숫자 출력 모양 맞추기
+if(n%7==0) System.out.println( ); // 일주일 입력시 다음줄에 출력)
+
+* 요일 출력하기
+int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
+char weekDay = " 일월화수목금토".charAt(dayOfWeek);
+
+<Date와 Calendar간의 변환>
+Date의 메서드는 대부분 deprocated되었지만 여전히 사용
+1. Calrendar를 Date로 변환
+Calendar cal = Calendar.getInstance( );
+Date d = new Date(cal.getTimeInMillis( ) ) ;
+
+2. Date를 Calrendar로 변환
+Date d = new Date( );
+Calendar cal = Calendar.getInstance( );
+cal.setTime(d)
+
+<형식화 클래스>
+java.text패키지의 DecimalFormat, SimpleDateFormat
+
+- 숫자와 날짜를 원하는 형식으로 쉽게 출력 가능(숫자, 날짜 > 형식 문자열)
+double number = 1234567.89;
+DecimalFormat df = new DecimalFormat("#.#E0");
+String result = df.format(number); // result="1.2E6"
+
+- 형식 문자열에서 숫자와 날짜를 뽑아내는 기능(형식 문자열 > 숫자, 날짜)
+DecimalFormat df = new DecimalFormat("#,###.##");
+Number num = df.parse("1,234,567.89");
+double d = num.doubleValue( ); // d=1234567.89
+*Integer.parseInt( )/ Float / Double등 은 ' , '가 포함된 문자열을 변환할 수 는 없다.
+
+- DecimalFormat
+숫자를 형식화할 때 사용(숫자 > 형식 문자열)
+
+* 1234567.89를 변환
+0 : 10진수(값이 없을 때는 0)
+
+0 > 1234568
+0.0 > 1234567.9
+0000000000.0000 > 0001234567.8900
+
+# : 10진수
+
+# > 1234568
+#.# > 1234567.9
+##########.#### > 1234567.89
+
+E : 지수기호
+
+#.#E0 > 1.2E6
+0.0E0 > 1.2E6
+0.000000000E0 > 1.234567890E6
+00.00000000E0 > 12.34567890E5
+#.#########E0 > 1.23456789E6
+##.########E0 > 1.23456789E6
+
+- SimpleDateFormat
+
+날짜와 시간을 다양한 형식으로 출력
+Date today = new Date( );
+SimpleDateFormat df = new SompleDateFormat("yyyy-MM-dd");
+String result = df.format(today);
+
+* 날짜 필드
+G : 연대(BC,AD)
+y : 연도
+M : 월(1~12or1월~12월)
+w : 년의 몇 번째 주(1~53)
+W : 월의 몇 번째 주(1~5)
+D : 년의 몇 번째 일(1~366)
+d : 월의 몇 번째 일(1~31)
+F : 월의 몇 번째 요일(1~5)
+E : 요일
+
+* 특정 형식으로 되어 있는 문자열을 날짜와 시간으로 변환
+DateFormat df = new SimpleDateFormat("yyyy년 MM월 dd일");
+
+DateFormat df = new SimpleDateFormat("yyyy/MM/dd");
+
+Date d = df.parse("2015년 11월 23일");
+String result = df2.format(d) ;
+
+* 시간 필드
+a : 오전/오후(AM, PM)
+H : 시간(0~23)
+k : 시간(1~24)
+K : 시간(0~11)
+h : 시간(1~12)
+m : 분(0~59)
+s : 초(0~59)
+S : 천분의 일초(0~999)
+z : Time zone(General time zone) // GMT+9:00
+Z : Time zone(RFC 822 time zone) // +0900
+' : escape문자(특수문자 표현)

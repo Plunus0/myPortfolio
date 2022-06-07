@@ -1,0 +1,46 @@
+<게시물 목록 페이징>
+게시글 목록이 많을 때 페이지별로 구분 후 페이지 네비게이션을 통해 게시물 목록을 편리하게 이용하는 것
+
+<페이징처리시 유의사항>
+- 용어정리 : 용어가 헷갈리기 때문에 미리 정의해두고 시작한다.
+totalCnt : 총 게시물 갯수
+PageSize : 각 화면에 보여줄 게시글의 목록 수
+naviSize : 페이지 네비게이션으로 보여줄 페이지번호들의 한 묶음
+totalPage : 전체 페이지의 갯수
+* (int)Math.ceil( totalCnt / (double)pageSize )
+Page : 현재 보고있는 페이지의 번호
+beginPage : 보여지는 페이지 네비게이션 중 가장 앞 페이지의 번호
+* (page-1) / naviSize * naviSize + 1
+endPage : 보여자는 페이지 네비게이션 중 가장 뒤 페이지의 번호
+* Math.min( beginPage + naviSize -1, totalPage )
+showPrev : 이전 페이지로 이동하는 링크(화살표
+* beginPage != 1
+showNext : 다음 페이지로 이동하는 링크(화살표
+* endPage != totalPage
+
+- 페이지 네비게이션 생성 예시
+    <div class="paging-container">
+      <div class="paging">
+        <c:if test="${totalCnt==null || totalCnt==0}">
+          <div> 게시물이 없습니다. </div>
+        </c:if>
+        <c:if test="${totalCnt!=null && totalCnt!=0}">
+          <c:if test="${ph.showPrev}">
+            <a class="page" href="<c:url value="/board/list?page=${ph.beginPage-1}"/>">&lt;</a>
+          </c:if>
+          <c:forEach var="i" begin="${ph.beginPage}" end="${ph.endPage}">
+            <a class="page ${i==ph.page? "paging-active" : ""}" href="<c:url value="/board/list?page=${i}"/>">${i}</a>
+          </c:forEach>
+          <c:if test="${ph.showNext}">
+            <a class="page" href="<c:url value="/board/list?page=${ph.endPage+1}"/>">&gt;</a>
+          </c:if>
+        </c:if>
+      </div>
+    </div>
+
+- 게시글 클릭시 게시글의 번호와 현재 페이지의 번호 등의 정보를 넘겨줘야 돌아올때 해당 정보를 활용할 수 있다.
+
+- SQL의 LIMIT 구문활용
+* page당 offset을 구하는 쉬운 방법은 (page-1)*10 으로 보면 된다. 
+* offset : 위에서부터 건너뛸 행의 숫자
+* row_count 읽어올 행 수

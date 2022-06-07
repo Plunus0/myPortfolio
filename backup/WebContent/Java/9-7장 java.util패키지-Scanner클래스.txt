@@ -1,0 +1,17 @@
+<Scanner클래스>
+java.util 패키지에 있는 화면으로부터 데이터를 입력받는 기능을 제공하는 클래스
+
+<사용방법>
+1. import문 추가
+import java.util.*;
+2. Scanner객체의 생성
+Scanner scanner = new Scanner(System.in);
+3. Scanner객체를 사용
+int num = scanner.nextInt(); // 화면에서 입력받은 정수를 num에 저장
+String input = scanner.nextLine();//화면에서 입력받은 내용을 input에 저장
+int num = Integer.parseInt(input);//문자열(input)을 숫자(num)로 변환
+
+<Scanner클래스 주요 메서드>
+scanner.nextLine( ) : 화면에서 한줄을 입력받는다.
+scanner.nextInt( ) : 화면에서 정수를 입력받는다.
+scanner.hasNextLine( ) : 다음 읽어올 줄이 있는지 확인한다.

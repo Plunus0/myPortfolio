@@ -1,0 +1,19 @@
+<Oracle DataBase 설치>
+oracle 사이트에서 - XE(Express Version)버전 다운로드
+설치 및 계정 활성화 작업 - 참조문서 확인
+
+system 접속
+id : system
+password입력
+
+<Oracle developer에 MySQL Server 연결하기>
+1. mysql-connector-java-버전.jar 파일 다운로드
+2. sqldeveloper 폴더 내 복사
+3. sqldeveloper 도구 > 환경설정 > 데이터베이스 > 타사 JDBC드라이버 복사한 jar파일 항목추가
+4. 데이터베이스 접속 시 데이터베이스 유형 MySQL선택
+
+<Oracle 삭제하기>
+윈도우 작업관리자 > 서비스 > Oracle관련 서비스 전부 중지 후 삭제
+
+<Oracle에서 문자열 잇기>
+Concat( )을 사용할 수 있지만 || 를 사용하여 이을수도 있다.

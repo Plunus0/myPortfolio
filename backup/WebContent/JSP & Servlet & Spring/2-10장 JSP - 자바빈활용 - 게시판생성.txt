@@ -1,0 +1,190 @@
+[게시판 생성]
+리얼타임으로 필요한것을 매번 가져오자. (<> 한번에 모든 정보를 가져와서 뿌려주는것 좋지 않다.)
+sql셀렉트의 아스타(*)기호는 관계없는사람이 보기 어렵다. 최대한 일일히 작성하자.
+각 컨텐츠를 특정하기 위한 PK를 항상 가져온다.
+
+<SQL과 연동하여 데이터 저장하기(게시글 작성)>
+1. form tag로 데이터들을 입력 받을 form 구현
+* 이때 form의 속성 중 action(데이터를 받을 페이지)과 method(전송방식)를 작성
+
+2. 제출할 수 있는 버튼에 자바 스크립트로 이벤트를 추가하여 호환성검사 진행
+
+3. 데이터를 전달받은 페이지에서 Form 태그를 통해 넘어오는 데이터를 자바빈 VO클래스 객체로 맵핑한다.(임포트 필요)
+* 맵핑 예시
+<jsp:useBean id="vo" class="com.프로젝트명.vo.생성된VO"></jsp:useBean>
+<jsp:setProperty property="*" name="vo"/>
+
+4. DAO클래스 객체를 통해 DB 연동 로직을 구현 후 실행한다.
+public int 저장할메서드명(VO클래스명 vo) {
+int result = 0;
+String sql = "insert into cgv_board values('b_'||sequ_cgv_board_bid.nextval,?,?,0,sysdate)";
+getPreparedStatement(sql);
+try {
+pstmt.setString(1,  vo.get?에들어갈필드명());
+pstmt.setString(2,  vo.get?에들어갈필드명());
+result = pstmt.executeUpdate();
+close();
+} catch (Exception e) {
+e.printStackTrace();}
+return result;}
+
+5. JSP페이지에서 실행 및 로그인 성공유무에 따라 결과창을 보여줄 화면으로 이동
+* 실행 예시(Result객체가 없으므로 정상시행시 반환값은 int이다.)
+생성된DAO dao = new 생성된DAO();
+int result = dao.insert(vo);
+if(result == 1){
+response.sendRedirect("저장 성공시 보여줄 화면URL과 QueryString";)
+}else{response.sendRedirect("저장 실패시 보여줄 화면URL과 QueryString");}
+
+<SQL과 연동하여 데이터 출력하기(게시글 리스트)>
+
+1. .jsp페이지에서 가져올 Data의 DAO객체를 생성 
+DAO클래스명 dao = new DAO클래스명();
+
+2. import하기
+<%@ page import="패키지명.dao.*" %>
+<%@ page import="패키지명.vo.*" %>
+<%@ page import="java.util.ArrayList" %>
+
+3. DB에서 전체 리스트를 출력하는 메서드 만들기
+public ArrayList<VO클래스명> 검색메서드명(){
+ArrayList<VO클래스명> list = new ArrayList<VO클래스명>();
+String sql = "SELECT ROWNUM RNO, BID, BTITLE, BHITS, TO_CHAR(BDATE, 'YYYY/MM/DD') BDATE FROM\r\n" + 
+"( SELECT BID, BTITLE, BHITS, BDATE FROM CGV_BOARD ORDER BY BDATE DESC)";
+* 함수와 ORDER BY를 같이 사용할 경우 결과에 이상이 생길 수 있으니 하위 질의(소괄호를 통해 조건의 실행순서를 조절)를 사용한다.
+getPreparedStatement(sql);
+try {
+rs = pstmt.executeQuery();
+while(rs.next()) {
+CgvBoardVO vo = new CgvBoardVO();
+vo.setRno(rs.getInt(1));
+vo.setBid(rs.getString(2));
+vo.setBtitle(rs.getString(3));
+vo.setBhits(rs.getInt(4));
+vo.setBdate(rs.getString(5));
+//list에 추가하고 연결닫기//
+list.add(vo);}
+close();
+} catch (Exception e) {
+e.printStackTrace();}
+return list;}
+
+5. 가져온 데이터를 ArrayList에 담기
+ArrayList<가져올VO클래스> 변수명 = dao.검색메서드명;
+
+6. 전체 리스트를 출력하는 메서드 호출하기
+<%for(VO클래스명 vo : list){ %>
+<tr>
+<td>1</td>
+<td><a href="board_content.jsp">
+<%= vo.get필드명() %></a></td>
+<td><%= vo.get필드명() %></td>
+<td><%= vo.get필드명() %></td>
+</tr>
+<% } %>
+
+<SQL과 연동하여 데이터 출력하기(게시글 열람)>
+클릭했을 때 컨텐츠로 넘어가는 경우 get방식을 통해 pk를 넘긴다.
+열람시 조회수 업데이트가 필요할 수 있다.
+
+1. 출력할 게시물을 pk등으로 특정하기
+* bid등은 get방식으로 요청받아서 사용하는게 일반적이다.(post방식은 form을 통해서만 받을 수 있음)
+String 변수명 = request.getParameter("pk명");
+
+2. pk명을 활용하여 검색메서드를 실행
+DAO클래스명 dao = new DAO클래스명();
+dao.업데이트메서드명(pk명);
+* 조회수 업데이트 메서드(필요시/리턴이 없고 조회수를 1늘림)
+public void 업데이트메서드명(String pk명) {
+String sql = "UPDATE CGV_BOARD SET BHITS=BHITS+1 WHERE BID=?";
+getPreparedStatement(sql);
+try {
+pstmt.setString(1, bid);
+pstmt.executeUpdate();
+} catch (Exception e) {
+e.printStackTrace();	}}
+
+VO클래스명 vo = dao.메서드명(pk명);
+* pk를 활용하여 검색
+public VO클래스명 검색메서드명(String pk명){
+CgvBoardVO vo = new CgvBoardVO();
+String sql = " SELECT BID, BTITLE, BCONTENT, BHITS, BDATE FROM CGV_BOARD"+" WHERE BID=?";
+getPreparedStatement(sql);
+try {
+pstmt.setString(1, bid);
+rs = pstmt.executeQuery();
+while(rs.next()) {
+vo.setBid(rs.getString(1));
+vo.setBtitle(rs.getString(2));
+vo.setBcontent(rs.getString(3));
+vo.setBhits(rs.getInt(4));
+vo.setBdate(rs.getString(5));}
+close();
+} catch (Exception e) {
+e.printStackTrace();}
+return vo;}
+
+3. pk명으로 검색한 데이터를 출력한다.
+<%= vo.get필드명() %>
+
+<SQL과 연동하여 데이터 수정하기(게시글 수정)>
+1. 먼저 수정할 내용을 보여줘야한다. 게시글 열람에서 pk를 특정받아  데이터를 출력한다. (게시글 출력 참고)
+
+2. 게시글 열람과 비슷하나 수정할 수 있는 From tag내 value값에해당 내용들을 출력
+
+3. 제출할 수 있는 버튼에 자바 스크립트로 이벤트를 추가하여 호환성검사 진행
+
+4. 데이터를 전달받은 페이지에서 Form 태그를 통해 넘어오는 데이터를 자바빈 VO클래스 객체로 맵핑한다.(임포트 필요)
+* 맵핑 예시
+<jsp:useBean id="vo" class="com.프로젝트명.vo.생성된VO"></jsp:useBean>
+<jsp:setProperty property="*" name="vo"/>
+
+5. DAO클래스 내에 수정을 실행할 메서드를 제작(pk값을 활용하여 제목과 내용을 수정)
+public int 수정하는메서드(CgvBoardVO vo) {
+int result = 0;
+String sql = "UPDATE CGV_BOARD SET BTITLE=?, BCONTENT=? WHERE BID=?";
+getPreparedStatement(sql);
+try {
+pstmt.setString(1, vo.getBtitle());
+pstmt.setString(2, vo.getBcontent());
+pstmt.setString(3, vo.getBid());
+result = pstmt.executeUpdate();
+close();
+} catch (Exception e) {
+e.printStackTrace();}
+return result;}
+
+6. 전달받은 JSP페이지에서 메서드 실행 및 수정 성공유무에 따라 결과창을 보여줄 화면으로 이동
+* 실행 예시(Result객체가 없으므로 정상시행시 반환값은 int이다.)
+생성된DAO dao = new 생성된DAO();
+int result = dao.수정하는메서드(vo);
+if(result == 1){
+response.sendRedirect("수정 성공시 보여줄 화면URL과 QueryString";)
+}else{response.sendRedirect("수정 실패시 보여줄 화면URL과 QueryString");}
+
+<SQL과 연동하여 데이터 삭제하기(게시글 삭제)>
+1. 삭제할 내용을 특정해야한다. pk를 전달받는다
+
+2. DAO클래스 내에 삭제를 실행할 메서드를 제작(pk값을 활용하여 삭제 sql문을 작성)
+public int delete(String bid) {
+int result = 0;
+String sql="DELETE FROM CGV_BOARD WHERE BID=?";
+getPreparedStatement(sql);
+try {
+pstmt.setString(1, bid);
+result = pstmt.executeUpdate();
+close();
+} catch (Exception e) {
+e.printStackTrace();}
+return result;}
+
+3. 전달받은 JSP페이지에서 메서드 실행 및 수정 성공유무에 따라 결과창을 보여줄 화면으로 이동
+* 실행 예시(Result객체가 없으므로 정상시행시 반환값은 int이다.)
+생성된DAO dao = new 생성된DAO();
+int result = dao.수정하는메서드(vo);
+if(result == 1){
+response.sendRedirect("수정 성공시 보여줄 화면URL과 QueryString";)
+}else{response.sendRedirect("수정 실패시 보여줄 화면URL과 QueryString");}
+
+[참고]
+* 여러개의 데이터를 받아 실행할 땐 VO객체를 매개변수로 받고 하나만 받을 땐 기본형으로 받아도 된다.

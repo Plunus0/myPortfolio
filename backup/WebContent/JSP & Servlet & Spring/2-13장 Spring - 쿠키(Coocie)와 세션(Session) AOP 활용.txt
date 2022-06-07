@@ -1,0 +1,152 @@
+[쿠키 Cookie]
+클라이언트 식별 기술로써 이름과 값 쌍으로 구성된 작은 정보로 내부에는 도메인, 패스, 유효기간등이 있다.
+아스키 문자만 가능(한글은 URL인코딩 필요)
+서버에서 생성 후 전송, 브라우저에 저장. 유효기간 이후 자동 삭제
+이후 도메인으로 서버가 요청시 도메인과 패스(하위경로 포함)가 일치하는 경우에만 쿠키가 도메인에 요청헤더에 자동으로 포함되어 전송된다.
+
+<쿠키의 생성과 변경 및 삭제>
+마지막엔 반드시 response.addCookie(cookie)를 적용시켜야 반영된다.
+
+- 쿠키의 생성
+Cookie cookie = new Cookie("이름", "값") : 쿠키 생성
+cookie.setMaxAge(60*60*24) : 유효기간 설정(초), 상대 시간
+response.addCookie(cookie) : 응답에 쿠키 추가 (클라이언트에 발급)
+
+- 쿠키의 변경 및 삭제
+Cookie cookie = new Cookie("이름", "") : 변경할 쿠키와 같은 이름 쿠키 생성(값은 주지 않는다.)
+cookie.setValue(URLEncoder.encode("한글")) : 값의 변경
+cookie.setDomain("www.도메인명co.kr") : 도메인의 변경
+cookie.setPath("/경로") : 경로의 변경
+cookie.setMaxAge(0) : 유효기간을 0으로 설정(삭제), 변경할 수도 있다.
+response.addCookie(cookie) : 응답에 쿠키추가
+
+<쿠키 활용>
+- 쿠키 읽어오기
+Cookie[ ] cookie = request.getCookies( ) : 쿠키 읽기
+for(Cookie cookie : cookies){
+String name = cookie.getName( );
+String value = cookie.getValue( );
+System.out.printf("[cookie]name=%s, value=%s%n", name, value);}
+
+- 예시
+쿠키를 생성할 조건인지 확인(아이디 저장 체크여부)
+참 : DB를 비교하여 로그인성공 > 해당 아이디의 쿠키 생성 및 부여 > 쿠키가 있으면 form의 value값에 cookie값을 읽어오며, 아이디 저장 체크
+그 외 : 쿠키 삭제
+
+[세션 Session]
+서로 관련된 요청들을 하나로 묶은 것 (쿠키를 이용)
+브라우저(쿠키)마다 개별 저장소(session객체)(세션)를 서버에서 제공
+쿠키가 브라우저에 저장되는 정보라면 세션은 서버에 저장되는 인증정보이다.
+HTML의 각각의 요청은 원래 독립적이나 같은 세션인지 체크하여 이 요청들을 구분해주는 것
+클라이언트가 요청시 서버는 세션객체(저장소)와 JSESSIONID 쿠키를 자동으로 만들어서 클라이언트에 응답한다. 이후 도메인으로 서버가 요청시 부여받은 해당 정보가 요청헤더에 자동으로 포함되어 전송된다. (서버는 JSESSIONID를 식별하여 브라우저를 구분한다. 구분된 브라우저는 부여된 JSESSIONID에 부합하는 세션객체(저장소)를 사용할 수 있다.)
+
+- 쿠키를 허용하지 않는 브라우저
+쿠키를 허용하지 않는 브라우저가 있다면 URL에 세션정보(JSESSIONID)를 매번 전송해주어야한다.(모든 URL에 "<c:url value="URL링크"/>" 라고 반드시 작성해주어야 자동으로 처리해준다, <c:url> 태그를 붙이지 않으면 매번 JSESSIONID가 새로 생성되어 응답헤더로 보내진다.)
+* 서버는 최초응답에 JSESSIONID를 응답헤더와 url 두가지 방식으로 보내주며 이후 요청헤더에 JSESSIONID가 있다면 url로는 더이상 보내주지 않는다.
+
+- 세션의 생성 설정 : session = true/false (default는 true)
+세션이 있으면 둘 다 세션을 만들지 않는다. 다만 세션이 없을 때 생성 여부를 결정한다. 세션정보가 필요하지 않는 곳에서는 세션을 만들지 않도록 설정할 수 있다. 해당 설정은 지시자에서 설정가능하다.
+
+- 세션 가져오기(생성은 서버에서 자동으로 한다.)
+HttpSession session = request.getSession( ) : 세션정보(JSESSIONID)를 가져온다
+
+- 세션의 주요 메서드
+String getId( ) : 세션의 ID를 반환
+long getLastAccessedTime( ) : 세션 내에서 최근 요청을 받은 시간을 반환
+boolean isNew( ) : 새로 생성된 세션인지를 반환. request.getSession( ) 호출 후 사용
+void invalidate( ) : 세션 객체를 제거(저장된 객체도 삭제)
+void setMaxInactiveInterval(int interval) : 지정된 시간(초) 후에 세션을 종료(예약종료)
+int getMaxInactiveInterval( ) : 예약된 세션 종료 시간을 반환
+
+- 세션의 주요메서드(속성)
+void setAttribute(String name, Object value) : 지정된 값(value)을 지정된 속성 이름(name)으로 저장
+Object getAttribute(String name) : 지정된 이름(name)으로 저장된 속성의 값을 반환
+void removeAttribute(String name) : 지정된 이름(name)의 속성을 삭제
+Enumeration getAttributeNames( ) : 기본 객체에 저장된 모든 속성의 이름을 반환
+
+- 세션 종료 방법
+1. 수동종료
+HttpSession session = request.getSession( ) : 세션정보를 가져온다.
+session.invalidate( ) : 세션을 즉시종료
+session.setMaxInactiveInterval(30*60) : 예약종료(30분)
+
+2. 자동종료 - web.xml 활용
+<session-config>
+<session-timeout>30</session-timeout> : 예약종료(30분)
+</session-config>
+
+- 세션 활용 알고리즘
+1. 로그인체크
+세션을 얻어서 세션에 ID가 있는지 확인(sid : vo.getId())
+
+2. 사용자 체크
+세션에 ID가 있고, 그 ID가 특정 사용자인지 확인(if 중첩)
+
+[쿠키와 세션의 비교]
+쿠키(Cookie) :
+브라우저에 저장
+서버 부담이 없다
+보안에 불리
+서버 다중화에 유리
+
+세션(Session) :
+서버에 저장
+서버 부담이 크다
+보안에 유리
+서버 다중화에 불리(세션이 서버별로 생성될 수 있기 때문에 서버간 동기화가 필요하다.)
+
+** 간단한 로그아웃 메서드
+//로그아웃
+@RequestMapping(value="/logout.do", method=RequestMethod.GET)
+public ModelAndView logout(HttpSession session) {
+ModelAndView mv = new ModelAndView();
+String sid = (String)session.getAttribute("sid");
+if(sid != null) {
+session.invalidate();
+}
+mv.setViewName("/index");
+return mv;
+}
+
+[AOP 세션처리]
+서비스를 실행하는 관점에 따라 전 중간 후의 과정에 개입하여 세션을 검증하는 것
+
+<Model1 개발>
+각 페이지별로 세션객체를 비교하여 처리
+
+<Model2 개발>
+1. 각 페이지별로 세션객체를 비교하여 처리
+2. AOP를 적용하여 Interceptor 객체를 생성 후 처리(빈 컨테이너로 만드는 것 추천)
+* Interceptor 객체 생성 예시(servlet-context.xml)
+<!-- Interceptor 객체 생성 -->
+<beans:bean id="authInterceptor" class="com.web.Interceptor.AuthInterceptor"></beans:bean>
+	
+<interceptors>
+<interceptor>
+<mapping path="/admin*"/>
+<beans:ref bean="authInterceptor"/>
+</interceptor>
+</interceptors>
+
+* OOP(Object Oriented Programming) : 객체 지향 프로그래밍
+* AOP(Aspect Oriented Programming) : 관점 지향 프로그래밍(위빙 : 직물 짜듯 체크)
+
+HandlerInterCeptorAdapter의 주요메서드
+
+- boolean preHandle : 서비스 제공 전 확인, 반환타입은 항상 true로 고정되어있다. if문을 통해 false인 경우 원래 작업을 제한(다른작업 진행) 할 수 있도록 한다.
+* 예시
+@Override
+public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object Handler) throws Exception { 
+//1. request 객체에서 세션정보를 얻어오기
+HttpSession session = request.getSession();
+String sid = (String)session.getAttribute("sid");
+//2. 세션정보 체크 및 페이지 이동
+if(sid == null) {
+response.sendRedirect("http://localhost:9000/mycgv/login.do");
+return false;
+}
+return true;}
+
+- void postHandle : 서비스 제공 후 확인
+
+- void afterCompetion : 서비스 제공 완료 후 확인

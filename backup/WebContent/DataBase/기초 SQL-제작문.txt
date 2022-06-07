@@ -1,0 +1,64 @@
+<제작문법>
+1. CREATE TABLE :  테이블이름( ->괄호필수)
+속성이름 데이터타입[NULL/NOT NULL/UNIQUE/DEFAULT 기본값/CHECK]
+PRIMARY KEY 속성이름(들)
+FOREIGN KEY 속성이름 REFERENCES 테이블이름(속성이름)
+ON UPDATE/DELETE[CASCADE(삭제)/SET NULL]
+);( ->괄호+세미콜론필수)
+
+PRIMARY KEY : 기본키 지정
+FOREIGN KEY : 외래키 지정
+ON UPDATE / ON DELETE : 외래 키 속성의 수정과 튜플 삭제 시 동작
+
+SQL의 (열) 데이터 타입(형)
+1. 수치 타입 : Oracle 에서는 NUMBER, DECIMAL(i,j) or NUMBERIC(i,j)
+(i : 전체 숫자 갯수 / j : 소수점 이하 숫자 갯수)
+정수 : INTERGER, INT 및 SMALLINT (SQL표준)
+실수 : FLOAT, REAL 및 DOUBLE (SQL표준)
+2. 문자열 타입 : Oracle 에서 가변길이는 VARCHAR2
+고정길이 : CHAR(n) (n:문자길이)
+가변길이 : VARCHAR (n) (n:최대 허용 길이), CLOB(CHARACTER LARGE OBJECT)
+ex) CLOB(20M) : 최대 20MB 텍스트문서 저장가능
+3. 비트 타입 : 0과 1로 구성된 임의의 바이너리 값 저장
+고정길이 : BIT(n) (n:비트값 길이)
+가변길이 : BIT VARYING(n), BLOB(BINARY LARGE OBJECT)
+ex) BLOB(20M) : 최대 20MB 바이너리 값(실행 코드, 객체 등) 저장가능
+4. 날짜 타입 : 날짜(연월일) -> DATE
+5. 시간 타입 : 시분초 저장 -> TIME
+6. 타임스탬프 타입 : 날짜+시간 -> TIMESTAMP
+구간 타입 : 특정 기간 저장 -> INTERVAL
+ex) INTERVAL '3-4' YEAR TO MONTH
+
+제약조건 기술방법
+1. 기본 키 제약조건
+-PRIMARY KEY(컬럼 명 리스트)
+-컬럼명 컬럼타입 PRIMARY KEY
+2. 후보키 제약조건
+-컬럼명 컬럼타입 UNIQUE
+-UNIQUE(컬럼명,컬럼명) = 컬럼 조합
+3. Not null 제약 조건(NULL 설정 동일)
+-컬럼명 컬럼타입 NOT NULL
+4. 외래 키 무결정 제약조건
+-FOREIGN KEY(컬럼명) REFERENCES 참조할 테이블명(참조할 컬럼명)
+5. 도메인 제약 조건 : CHECK(검사할 값의 범위 지정)
+ex) 컬럼명 NUMBER NOT NULL CHECK (컬럼명>0 and 컬럼명 <10)
+
+<변경문법>
+기본문법
+ALTER TABLE 테이블이름
+ADD 속성이름 데이터타입
+MODIFY 속성이름 데이터타입
+DROP COLUMN 속성이름
+ALTER COLUMN 속성이름 데이터타입
+ALTER COLUMN 속성이름 (NULL/NOT NULL)
+ADD PRIMARY KEY(속성이름)
+(ADD/DROP) 제약이름
+;
+
+ADD/DROP : 속성을 추가 또는 제거
+MODIFY : 속성의 기본값을 설정하거나 삭제
+ADD/DROP <제약이름> : 제약사항을 추가하거나 삭제
+
+<삭제문법>
+기본문법
+DROP TABLE 테이블이름 (CASCADE CONSTRAINTS:제약조건 포함 삭제/PURGE:완전 삭제)

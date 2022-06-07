@@ -1,0 +1,23 @@
+<servlet과 jsp의 데이터 저장소>
+HTTP는 상태정보를 저장하지 않기 때문에 상태정보를 저장하려면 저장소가 필요하다.
+저장되는 데이터는 map형태이다.
+
+- 저장소의 특징
+1. 접근 범위
+2. 생존기간
+
+- 종류별 저장소의 유효범위와 속성
+1. PageContext : lv저장, 1개의 jsp페이지 내에서만 접근 가능, EL ( ${ } )을 사용하기 위해서 저장소가 필요하다.
+
+2. request : jsp페이지로 보내주는 요청 data를 담은 객체, 다른 페이지로 넘겨 줄 수도 있다.(forward) 1개 이상의 jsp페이지에서 접근이 가능하다. 서버의 부담이 가장 적기 때문에 가급적 request 저장소를 이용하는것이 좋다. EL을 사용하기 위해 해당 저장소를 이용하기도 한다.
+
+3. session : 클라이언트당 1개씩 부여되는 개별저장소, cookie를 이용하여 어떤 클라이언트의 저장소인지 구분하며 session의 시작부터 종료까지 유지된다.(login~logout) 서버의 부담이 크기 때문에 사용을 최소화하고, 최소한의 data만 저장하며 사용 후 바로 data를 지워준다.
+* 장바구니, ID 등
+
+4. application : Context 내 단 한개뿐인 저장소, WebApp(ServletContext)전체에서 접근이 가능하다.(모든 클라이언트가 공유) 해당 저장소에 데이터를 읽고/쓰기 위해선 setAttribute( ), getAttribute( )메서드를 활용한다.
+
+- 속성 관련 메서드
+> void setAttribute(String name, Object value) : 지정된 값(value)을 지정된 속성 이름(name)으로 저장
+> Object getAttribute(String name) : 지정된 이름(name)으로 저장된 속성의 값을 반환
+> void removeAttribute(String name) : 지정된 이름(name)의 속성을 삭제
+> Enumeration getAttributeNames( ) : 기본 객체에 저장된 모든 속성의 이름을 반환

@@ -1,0 +1,97 @@
+[Graphics]
+게임, 차트 등 다양하고 자유로운 모양에 적합
+컨텐츠팬에 JPanel을 상속받아 paintComponent() 메서드를 구현한 클래스를 부착하여 사용한다.
+*해당 메서드는 protected라서 꼭 상속을 받아야만 구현할 수 있다.
+
+- JComponent클래스
+> paintComponent() : 추상 메서드
+
+- paintComponent(Graphics g)가 호출되는 타이밍
+1. 처음으로 그려질 때
+2. 변화가 생길 때
+3. 가려졌다가 드러날 때
+4. 형태가 변화할 때
+5. repaint() 호출에 의해
+* Graphics g : 그래픽 context라고도 한다. 그리기 위한 기본 정보와 다양한 메서드를 가지고 있다.
+
+- 그래픽 사용 예시
+1. 기본 컨텐츠팬 생성 및 paintComponent() 구현된 클래스를 부착
+public class Graphic01 extends JFrame {
+
+public Graphic01() {
+
+Container c = getContentPane();
+MyCanvas canvas = new MyCanvas();
+c.add(canvas,BorderLayout.CENTER);
+
+setSize(1300,800);
+setVisible(true);}
+
+2. Jpanel을 상속받은 클래스로부터 paintComponent() 구현
+class MyCanvas extends JPanel{
+MyCanvas(){
+setBackground(new Color(0x00ffffcc));
+JLabel la = new JLabel("즐거운 자바시간");
+la.setOpaque(true);
+la.setBackground(Color.white);
+add(la);}
+
+@Override
+protected void paintComponent(Graphics g) {
+super.paintComponent(g);
+
+g.setColor(Color.BLUE);
+g.drawString("I Love Java~", 30, 30); // drawString() : 글자 작성
+
+g.setColor(new Color(255,0,0));
+g.setFont(new Font("",Font.ITALIC,35));
+
+g.drawString("내일은 금요일입니다", 30, 70);
+
+g.setColor(new Color(0x00ff00ff));
+for(int i=1;i<=5;i++) {
+g.setFont(new Font("",Font.ITALIC,i*10));
+g.drawString("내일은 금요일입니다.",30,60+(i*15));}}}
+
+- Graphics의 주요 메서드
+> setColor(Color c) : 색상을 설정
+> setClip(x, y, sizeX, sizeY) : 해당 위치만 보여준다.
+
+1. 선으로만 이루어진 도형
+> drawLine(x1, y1, x2, y2) : 좌표 2개를 이은 선 그리기 (좌표1 : x1,y1 / 좌표2 : x2, y2)
+> drawArc(x,y,w,h,시작각,끝각) : 사각형에 내접하는 원, 원호 그리기(3시가 0도) (좌표 : x, y /가로 : w /세로 : h)
+> drawOval(x,y,w,h) : 사각형에 내접하는 타원형 그리기 (좌표 : x, y /가로 : w /세로 : h)
+> drawRect(x,y,w,h) : 사각형 그리기 (좌표 : x, y /가로 : w /세로 : h)
+> drawRoundRect(x,y,w,h,aw,ah) : 모서리가 둥근 사각형 그리기 (좌표 : x, y /가로 : w /세로 : h / 모서리의 원호 : aw, ah)
+> drawPolygon(int[] x, int[] y, int n) : 다각형 그리기 (좌표 : x[i], y[i] / 꼭지점 갯수 : n)
+
+2. 내부가 채워진 도형(setColor시 내부 색상이 설정되며 외곽선은 없다. 사용방법은 위와 동일)
+> fillRect( ) : 속이 채워진 사각형
+> fillOval( ) : 속이 채워진 타원형
+> fillArc( ) : 속이 채워진 원, 원호
+> fillRoundRect( ) : 속이 채워진 모서리가 둥근 사각형
+> fillPolygon( ) : 속이 채워진 다각형
+
+<ImageIcon>
+이미지를 불러오는 클래스
+- ImageIcon 생성자
+ImageIcon img = ImageIcon("이미지의 주소")
+
+<Image>
+이미지의 정보를 담고있는 클래스
+- Image 생성자
+Image im = img.getImage( );
+
+- Image의 주요 메서드
+> getWidth(Image im) : width 반환
+> getHeight(Image im) : height 반환
+> drawImage(image im, pointX, pointY, Color c, this) : 원본 그대로 이미지를 삽입한다.
+> drawImage(image im, pointX, pointY, sizeX, sizeY, Color c, this); : 이미지의 위치와 사이즈 설정
+> g.drawImage(image im, pointX, pointY, sizeX, sizeY, startX, startY, endX, endY, Color c, this) : 이미지를 잘라내어 붙인다.
+* 인자 설명
+Color c : 배경색 지정
+pointX, pointY : 이미지를 부착할 위치
+sizeX, sizeY : 부착할 이미지의 사이즈
+startX, startY : 잘라낼 원본 이미지의 시작점
+endX, endY : 잘라낼 원본 이미지의 끝부분
+

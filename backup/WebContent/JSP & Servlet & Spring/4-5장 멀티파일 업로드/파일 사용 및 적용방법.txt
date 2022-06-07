@@ -1,0 +1,119 @@
+1. 테이블 생성
+
+--테이블 형식
+create table cgv_product(
+  pid   varchar2(30) primary key,
+  pcategory varchar2(50) not null,
+  pname varchar2(100) not null,
+  price number(10) not null,
+  pinfo varchar2(500)  ,
+  pdate date
+);
+
+create sequence sequ_cgv_product_pid
+start with 1
+increment by 1;
+
+create table cgv_product_file(
+  fid   varchar2(30) primary key,
+  pfile1 varchar2(50),
+  pfile2 varchar2(50),
+  pfile3 varchar2(50),
+  pfile4 varchar2(50),
+  pfile5 varchar2(50),
+  psfile1 varchar2(100),
+  psfile2 varchar2(100),
+  psfile3 varchar2(100),
+  psfile4 varchar2(100),
+  psfile5 varchar2(100),
+      CONSTRAINT fk_code FOREIGN KEY (fid)
+         REFERENCES cgv_product(pid) ON DELETE CASCADE
+);
+
+2. 멀티파일 등록 화면 :  product_insert.jsp
+3. 멀티파일 등록 데이터 저장 VO  : CgvProductVO.java
+* 동적 sql을 사용하기 때문에 파일명들은 List 클래스로 사용
+4. 컨트롤러 파일 : AdminController.java
+5. 서비스 파일 : FileServiceImpl.java, ProductServiceImpl.java (Servlet-Context.xml 파일에 추가)
+6. Dao 파일 : CgvProductDAO.java
+* CommonsMultipartFile에 담긴 데이터를 하나씩 꺼내서 List에 저장(만약 데이터가 없다면 반드시 ""로 데이터를 입력한다.
+7. 매퍼 파일 : cgv_product_mapper.xml
+
+
+-----------------------------------------------------------
+AdminController.java 추가 부분
+-----------------------------------------------------------
+	/**
+	 * 상품관리 - 상품등록
+	 */
+	@RequestMapping(value="/admin/product_insert.do", method=RequestMethod.POST)
+	public ModelAndView product_insert(CgvProductVO vo) {
+		ModelAndView mv = new ModelAndView();
+	
+		fileService.multiFileCheck(vo);
+		int result = productService.getInsertResult(vo);
+	
+		mv.setViewName("/admin/product/product_insert");
+		
+		return mv;
+	}
+	
+	/**
+	 * 상품관리 - 상품등록
+	 */
+	@RequestMapping(value="/admin/product_insert.do", method=RequestMethod.GET)
+	public ModelAndView product_insert() {
+		ModelAndView mv = new ModelAndView();
+	
+		mv.setViewName("/admin/product/product_insert");
+		
+		return mv;
+	}
+
+
+
+-----------------------------------------------------------
+FileServiceImpl.java 추가 부분
+-----------------------------------------------------------
+	//멀티파일 체크
+	public CgvProductVO multiFileCheck(CgvProductVO vo) {		
+		
+		if(vo != null) {
+			for(int i=0; i<vo.getFiles().length; i++) {
+				UUID uuid = UUID.randomUUID();		
+				CommonsMultipartFile file = vo.getFiles()[i];
+				
+				if(!file.getOriginalFilename().equals("")) { //파일존재 하는 경우	
+					vo.getPfiles().add(file.getOriginalFilename());
+					vo.getPsfiles().add(uuid + "_" + file.getOriginalFilename());
+				}else {
+					vo.getPfiles().add("");
+					vo.getPsfiles().add("");
+				}
+				System.out.println(vo.getPfiles().size());
+			}
+		}
+				
+				
+		return vo;
+	}
+	//멀티파일 저장
+	public void multiFileSave(MwRecipeVO vo, HttpServletRequest request) throws Exception{
+		
+		if(vo != null) {
+			for(int i=0; i<vo.getFiles().length; i++) {
+				CommonsMultipartFile rfile = vo.getFiles()[i]; //files 배열에 저장된 주소번지의 파일반환
+			
+				if(!rfile.getOriginalFilename().equals("")) {
+				
+					//파일저장 위치 확인
+					String path = request.getSession().getServletContext().getRealPath("/");
+					path += "resources\\upload\\";
+					
+					//파일저장
+					File file = new File(path + vo.getRsfiles().get(i));			
+					rfile.transferTo(file);
+				}
+			}
+		}	
+	}

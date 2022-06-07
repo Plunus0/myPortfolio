@@ -1,0 +1,32 @@
+<Eclipse 사용법>
+- 언어설정 : Windows > Preferences 에서 enc 검색 후 전부 UTF-8로 변경
+
+- Build : 소스파일(*.java)로부터 프로그램을 만들어 내는 전 과정
+Project > Build All : Workspace의 모든 프로젝트를 빌드
+Project > Build Project : 현재 프로젝트를 빌드(변경된 소스 파일만 새로 컴파일)
+Project > Clean : 이전 빌드의 정보를 모두 삭제(모든 소스파일을 새로 컴파일)
+Project > Build Automatically : 소스 파일을 변경 후, 저장할 때 마다 자동 컴파일(자주 사용)
+
+- 이클립스 단축키 : Windows > Preferences > General > Keys 에서 설정 가능
+> ctrl+shift+L 단축키 전체 목록
+> ctrl+ +, - 폰트 크기 증가/감소
+> ctrl+D 한줄 삭제
+> ctrl+Z 이전 작업으로 돌아가기
+> alt+up, down 행단위 이동
+> ctrl+alt+down 행단위 복사
+> alt+shift+A 멀티컬럼 편집모드 진입
+> tap, shift+tap 들여쓰기, 내어쓰기
+> ctrl+i 자동 들여쓰기
+> // 한줄 주석
+> /* ~ */ 범위 주석
+> ctrl+/ 주석 처리/해제
+> ctrl+space 자동완성(템플릿 등록)
+
+- 템플릿 수정
+Windows > Preferences > Java > Editor > Templates 수정 후 No 누를 것
+
+- 입력 중 자동완성
+Windows > Preferences > Java > Editor > Content Assist > Auto Activation (모든 알파벳 입력 시 자동완성을 편하게 도와줌)
+
+- 프로젝트 import
+이클립스 상단 탭 File > import > General > Existing Projects into Workspace(워크스페이스 폴더 내) > Select root directory의 Browse 선택 > Projects에 체크표시가 나오는것 확인

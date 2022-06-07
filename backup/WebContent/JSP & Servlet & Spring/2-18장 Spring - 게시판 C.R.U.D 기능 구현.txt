@@ -1,0 +1,15 @@
+<기능별 URI 정의>
+- 읽기(GET) : 지정된 번호의 게시물을 보여준다.
+* /board/read?bno=번호
+
+- 삭제(POST) : 게시물을 삭제한다.
+* /board/remove
+
+- 쓰기(GET) : 게시물을 작성하기 위한 화면을 보여준다.
+- 쓰기(POST) : 작성한 게시물을 저장한다.
+* /board/write
+
+- 수정(GET) : 게시물을 수정하기 위해 읽어온다.
+* /board/modify?bno=번호
+- 수정(POST) : 수정된 게시물을 저장한다.
+* /board/modify

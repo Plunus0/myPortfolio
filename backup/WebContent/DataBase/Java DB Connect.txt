@@ -1,0 +1,36 @@
+JDBC(Java DataBase Connectivity) - java.sql 패키지로 제공
+1. 드라이버 준비
+오라클설치폴더\app\oracle\product\설치버전\server\jdbc\lib\ojdbc~.jar 파일을 복사하여 실행할 서버에 .jar파일 붙여넣기
+* JAVA Web - Tomcat 설치폴더의 lib
+
+2. 드라이버 로딩
+Class.forName("oracle.jdbc.driver.OracleDriver")
+* 복사한 드라이버 내부의 OracleDrive경로
+* 압축을 풀어 경로대로 설치
+
+3. Connection 객체 생성
+Connection 변수명 = DriverManager.getConnection(서버정보,계정,비밀번호)
+* import = "java.sql.*"
+* 서버정보(Oracle) 예시 : "jdbc:oracle:thin:@localhost:1521:xe"
+
+4. Statement 객체 생성 : Statement 변수명 = Connection객체명.createStatement(~)
+
+5-1. ResultSet 객체 생성
+Result 변수명 = Statement객체명.executeQuery(sql)
+* SELCET문 > ResultSet 객체 생성은 SELECT문만 가능하다.
+
+5-2. 그 외 질의(INSERT, UPDATE, DELETE)
+int 변수명 = Statement객체명.executeUpdate(sql)
+* 실행 반환타입은 int타입이다.
+
+- ResultSet 객체가 있을 경우 O
+6. while(ResultSet객체.next()){ ArrayList에 각 Row데이터를 담은 VO객체를 저장}
+* 반복문의 수행 횟수(row의 갯수)를 모르므로 .next( )(최초 포커스는 DB이전으로 잡혀있기에 문제가 없다) 메서드를 활용하여 가급적 while문으로 사용한다.
+* 객체명.getString(1) or 객체명.getInt(1) 등으로 value를 가져온다.
+
+- ResultSet 객체가 없을 경우 X
+7. 가장 마지막에 생성된 객체부터 Close( ) 메서드를 호출하여 종료
+* ResultSet > Statement > Connection
+
+* JDBC의 사용법은 JAVA SE, JAVA EE, JAVA ME 동일하다.
+* Exception이 없어도, JSP 엔진에서 처리해준다.(Java코드로 만들면 Try-Catch를 추가해주자)

@@ -1,0 +1,132 @@
+****** Model 만들 때 주의사항으로 Form과 DBColumn과 VO의 필드명을 일치시켜야한다. ******
+
+[자바빈 클래스 생성]
+클래스의 구성요소에 맞게 생성한다.
+* 클래스 구성요소 : 필드(전역변수), 생성자, 메서드
+
+- 자바빈 클래스 생성위치
+프로젝트폴더 > Java Resources > com.프로젝트명.dao/vo 패키지 생성 > DBtable명DAO/VO 클래스 생성
+
+<VO(Value Object), DTO(Data Transfer Object)>
+데이터를 저장하는 클래스 객체이다.
+DAO를 통해 DataBase에서 가져온 데이터를 담는 역할을 한다.
+* DAO와 VO는 같이 만들어 준다.
+* form에서 들어오는 데이터를 저장할 때 변환하는 과정에서 null Exception이 발생할 가능성이 있기에 가급적 wrapper class로 받아준다. (integer 등)
+
+- VO 생성방법
+1. 데이터를 담을 필드(전역변수)를 선언한다.
+* 초기화는 자동으로 해주니 선언만 하면된다.
+2. getter와 setter 메서드를 생성
+* Source탭을 눌러 자동생성을 이용해도 된다.
+3. 필요시 ToString메서드를 생성한다.
+
+<DAO(DataBase Access Object)>
+DAO는 가져올 DB의 Table기준으로 생성한다.
+같은 작업들은 부모클래스로 생성하여 자식클래스가 상속받게 한다.
+
+- DAO 생성방법
+1. 필드선언 : 전역변수로 사용할 필드를 선언한다.
+2. 생성자 : 기본생성자 또는 매개변수가 필요한 생성자 선언
+3. 메서드 : JDBC의 작업범위 별 메서드를 작성한다.
+* 각 생성자 또는 메서드는 JDBC의 작업범위를 필요에따라 구분하여 작성한다.
+* 공통부분은 별도로 생성하여 상속 또는 포함을 통해 재사용한다.
+
+- JDBC(Java DataBase Connectivity) : java.sql 패키지로 제공(import = "java.sql.*")
+1. 드라이버 준비
+오라클설치폴더\app\oracle\product\설치버전\server\jdbc\lib\ojdbc~.jar 파일을 복사하여 실행할 서버에 .jar파일 붙여넣기
+* JAVA Web - Tomcat 설치폴더의 lib
+
+2. 드라이버 로딩 (예외처리)
+Class.forName("oracle.jdbc.driver.OracleDriver")
+* 복사한 드라이버 내부의 OracleDrive경로
+* 압축을 풀어 경로대로 설치
+
+3. Connection 객체 생성 (예외처리)
+Connection 변수명 = DriverManager.getConnection(서버정보,계정,비밀번호)
+* 서버정보(Oracle) 예시 : "jdbc:oracle:thin:@localhost:1521:xe"
+
+4-1. PreparedStatement 객체 생성(예외처리)(대부분 사용)
+PreparedStatement 변수명 = Connection객체명.prepareStatement(String sql)
+* Statement를 상속받은 클래스이다. 매개변수로 SQL문구를 선요구하는데 이 과정 중 "?"를 사용하여 추후 맵핑을 할 수 있다.
+* 맵핑을 위해 VO클래스의 vo객체를 매개변수로 받아온다.
+String sql = "insert into member values(?, sysdate, ?)";
+pstmt.setString(1,vo.getId());
+pstmt.setString(2,vo.getName());
+* Result객체 생성 시 executeUpdate( ) 에 sql 문을 입력하지 않는다.
+
+4-2. Statement 객체 생성
+Statement 변수명 = Connection객체명.createStatement( )
+*Statement의 종류는 3가지
+
+5-1. 반환할 데이터가 있다면 : ResultSet 객체 생성(SELECT)하여 값을 받는다.
+ResultSet 변수명 = PreparedStatement객체명.executeQuery()
+ResultSet 변수명 = Statement객체명.executeQuery(sql질의문)
+* ResultSet 객체 생성은 SELECT문만 가능하다.
+* 출력형식을 변경하고 싶다면 jsp가 아닌 sql문의 query를 변경하는 방식으로 진행
+
+5-2. 반환할 데이터가 없다면 : 그 외 질의(INSERT, UPDATE, DELETE)는 int 타입의 변수를 생성하여 값을 받는다.
+int 변수명 = PreparedStatement객체명.executeUpdate()
+int 변수명 = Statement객체명.executeUpdate(sql질의문)
+* 실행 반환타입은 실행 갯수에 따른 int타입이다.
+* 반환받을 필요가 없다면 메서드 실행만 해도 된다.
+
+- ResultSet 객체가 있을 경우 : 데이터 출력
+6. while(ResultSet객체.next()){ ArrayList에 각 Row데이터를 담은 VO객체를 저장}
+* 반복문의 수행 횟수(row의 갯수)를 모르므로 .next( )(최초 포커스는 DB이전으로 잡혀있기에 문제가 없다) 메서드를 활용하여 가급적 while문으로 사용한다.
+* 객체명.getString(1) or 객체명.getInt(1) 등으로 value를 가져온다.
+* 예시
+ArrayList<DeptVO> list = new ArrayList<DeptVO>();
+while(rs.next()){
+DeptVO vo = new DeptVO();
+vo.setDeptno(rs.getInt(1));
+list.add(vo); }
+
+7. 종료 : 마지막에 생성된 객체부터 역순으로 종료한다.
+데이터 출력을 메서드로 분리했는데 종료를 생성자에 두지는 말자
+데이터를 여러번 출력을 해야한다면 별도의 메서드로 생성
+* ResultSet > Statement > Connection
+
+* JDBC의 사용법은 JAVA SE, JAVA EE, JAVA ME 동일하다.
+* JSP에서 생성시 Exception이 발생해도 JSP 엔진에서 처리해준다.(Java코드로 만들면 Try-Catch구문으로 생성한다.)
+
+- 예시 (공통부분만)
+public class DBConn {
+//필드
+String driver = "oracle.jdbc.driver.OracleDriver";
+String url = "jdbc:oracle:thin:@localhost:1521:xe";
+String user = "scott";
+String pass = "tiger";
+Connection conn;
+Statement stmt;
+PreparedStatement pstmt;
+ResultSet rs;
+//생성자
+public DBConn() {
+try {
+Class.forName(driver);
+conn = DriverManager.getConnection(url,user,pass);
+} catch (Exception e) {
+e.printStackTrace();}}
+//3단계 : Statement 생성메서드
+public void getStatement() {
+try {
+stmt = conn.createStatement();
+} catch (Exception e) {
+e.printStackTrace();
+}}
+//3단계 : PreparedStatement 생성메서드
+public void getPreparedStatement(String sql) {
+try {
+pstmt = conn.prepareStatement(sql);
+} catch (Exception e) {
+e.printStackTrace();
+}}
+//4단계 : close() 생성메서드
+public void close() {
+try {
+if(rs != null){rs.close();}
+if(stmt != null){stmt.close();}
+if(pstmt != null){pstmt.close();}
+if(conn != null){conn.close();}
+} catch (Exception e) {
+e.printStackTrace();}}}

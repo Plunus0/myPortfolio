@@ -1,0 +1,75 @@
+<StringBuffer 클래스>
+String처럼 문자형 배열을(char[ ])을 내부적으로 가지고있다.
+그러나 String과 달리 내용을 변경할 수 있도록 버퍼를 가지고 있다.(mutable)
+
+- StringBuffer 생성자 : 배열은 길이 변경불가. 공간이 부족하면 새로운 배열 생성한다.
+* 저장할 문자열의 길이를 고려해서 적절한 크기로 먼저 생성해야한다.
+public StringBuffer(int length)
+* 기본적으로 최초 길이는 지정한 문자열+16 이다.
+
+- StringBuffer 변경
+StringBuffer는 String과 달리 내용 변경이 가능하다.
+
+- StringBuffer 비교 : StringBuffer는 equals( )가 오버라이딩 되어 있지 않기에 .toString( )으로 형변환 후 equals( )로 비교한다.
+
+<StringBuffer의 생성자>
+- StringBuffer( ) : 16문자를 담을 수 있는 버퍼를 가진 StringBuffer 인스턴스를 생성한다.
+StringBuffer sb = StringBuffer( ); // sb = ""
+
+- StringBuffer(int length) : 지정된 개수의 문자를 담을 수 있는 버퍼를 가진 StringBuffer 인스턴스를 생성한다.
+StringBuffer sb = new StringBuffer(10); // sb=""
+
+- StringBuffer(String str) : 지정된 문자열 값(str)을 갖는 StringBuffer 인스턴스를 생성한다.
+StringBuffer sb = new StringBuffer("Hi"); // sb="Hi"
+
+- StringBuffer append(기본형타입 참조변수)
+매개변수로 입력된 값을 문자열로 변환 후 StringBuffer인스턴스가 저장된 문자열의 뒤에 덧붙인다.
+StringBuffer타입의참조변수.append(기본형타입 참조변수);
+
+<StringBuffer의 주요메서드>
+- append(String str) : StringBuffer의 끝에 문자열(str) 추가
+
+- delete(int start, int end) : start부터 end까지의 문자열을 삭제한다.
+
+- insert(int offset, String str) : str을 offset 위치에 삽입
+
+- revers( ) : 문자열의 순서를 거꾸로 만들어 반환
+
+- replace(int start, int end, String str) : start부터 end까지의 문자열을 str로 변경
+
+- int capacity( ) : StringBuffer인스턴스의 버퍼크기를 반환( length( )는 버퍼에 담긴 문자열의 길이를 알려준다.)
+sb.capacity( );
+
+- int length( ) : StringBuffer인스턴스에 저장되어 있는 문자열의 길이를 반환
+sb.length( );
+
+- char charAt(int index) : 지정된 위치(index)에 있는 문자를 반환한다.
+char c = sb.charAt(2) // c='c'
+
+- StringBuffer delete(int start, int end) : 시작위치(start)부터 끝 위치(end)사이에 있는 문자를 제거한다. 단 끝 위치의 문자는 제외
+sb.delete(3, 6);
+
+- StringBuffer deletecharAt(int index) : 지정된 위치(index)의 문자를 제거한다.
+sb.deletecharAt(int index);
+
+- StringBuffer insert(int pos, 기본타입 v) : 두번째 매개변수로 받은 값을 문자열로 변환하여 지정된 위치(pos)에 추가한다. pos는 0부터 시작
+sb.insert(4,'.');
+
+- StringBuffer repalce(int start, int end, String str) : 지정된 범위(start~end)의 문자들을 주어진 문자열로 바꾼다. (start <= x < end)
+sb.repalce(3, 6, "AB");
+
+- StringBuffer reverse( ) : StringBuffer인스턴스에 저장되어있는 문자열의 순서를 거꾸로 나열한다.
+sb.reverse( );
+
+- void setCharAt(int index, char ch) : 지정된 위치의 문자를 주어진 문자(ch)로 바꾼다.
+sb.setCharAt(5, 'o');
+
+- void setLength(int newLength) : 지정된 길이로 문자열의 길이를 변경한다. 길이를 늘리는 경우 빈공간을 널문자 '\u0000'로 채운다.
+sb.setLength(5);
+
+- String toString( ) : StringBuffer 인스턴스의 문자열을 String으로 반환
+sb.toString( );
+
+- String substring(int start)
+String substring(int start, int end) : 지정된 범위의 문자열을 뽑아서 String으로 반환한다. 시작위치만 입력할 경우 모든 문자열까지 반환
+sb.substring(3, 5);
