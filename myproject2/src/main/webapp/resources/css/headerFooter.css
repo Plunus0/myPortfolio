@@ -1,0 +1,146 @@
+@charset "UTF-8";
+
+*{
+	margin: 0; padding: 0;
+	font-family: 'NanumSquare';
+	}
+li{list-style-type: none;}
+a[href] {text-decoration: none;}
+input{outline: none;}
+
+header a{
+	color: #081D3F;
+}
+
+ul.menu li{
+	display: inline-block;
+	padding-bottom: 10px;
+	cursor: pointer;
+}
+
+header ul#menu1 li{
+	padding-right: 20px;
+	font-size: 12pt;
+/* 	background: pink; */
+	font-weight:bold;
+}
+
+header ul:not(#menu1) li{
+	padding-right: 10px;
+	font-size: 10pt;
+/* 	background: cyan; */
+}
+
+header li:not(.mainpage){
+	position: relative;
+	top: -4px;
+}
+
+header{
+	background: #f2f2f2;
+}
+
+header>div{
+	width: 98%;
+	margin:auto;
+	background: #f2f2f2;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+/* 	background: yellow; */
+}
+
+
+header ul{
+	margin: 30px 60px 110px;
+}
+
+header img{
+	width: 23px;
+	height: 18px;
+	position: relative;
+	top: 3px;
+}
+
+header li.mainpage>a{
+	font-size: 20pt;
+}
+
+footer{
+	background: #011E41; 
+}
+
+
+footer>div{
+	width: 82em;
+	margin:auto;
+	padding: 50px 0;
+	background: #011E41;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	
+	
+}
+
+footer li{
+	color: white;
+	font-size: 10pt;
+	margin-bottom: 5px;
+}
+
+footer ul{
+	text-align: center;
+}
+
+footer li:first-of-type {
+	font-size: 11pt;
+	font-weight: bold;
+	text-decoration: underline;
+}
+
+footer li:nth-of-type(12) {
+	font-weight: bold;
+	text-decoration: underline;
+}
+
+footer li:last-of-type {
+	text-decoration: underline;
+}
+
+
+.dropdown-content{
+	display:none;
+	position: absolute;
+	top: 30px;
+	width: 170px;
+	z-index: 9999;
+}
+
+.dropdown-content a{
+	background: #fff;
+	display: block;
+	color: #0042A9;
+	padding: 12px 0 12px 12px;
+	font-size: 9.5pt;
+}
+
+.dropdown-content a:hover{
+	background: rgb(15,45,105);
+	color: #fff;
+}
+
+.dropdown:hover .dropdown-content{
+	display:block;
+}
+
+img.topArrow{
+	position: fixed;
+	bottom: 95px; right: 45px;
+}
+
+img.dalDongHee{
+	position: fixed;
+	bottom: 20px; right: 20px;
+	width: 17em;
+}
