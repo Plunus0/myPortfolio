@@ -1,0 +1,36 @@
+[PHP+MySQL]
+- PHP에 MySQL을 활용하여 웹페이지에 데이터를 접목
+- PHP의 함수 또는 객체지향 방식을 사용하면 MySQL Server의 Client로 작동할 수 있다.
+- 문자열(따옴표) 내부에서 MySQL문법을 사용할 수 있다.
+- MySQL을 사용하는 PHP의 API는 총 3개정도 있으나 추천하는건 mysqli 혹은 PDO_MySQL이다.
+
+[mysqli 사용 방법]
+1. $mysqli = mysqli_connect("database주소", "user", "password", "database이름"); : mysql에 접속
+2. $result = mysqli_query($mysqli, "SELECT '출력할열' AS _msg FROM DUAL"); : mysql이 연결된 링크를 통해 query를 한다.
+3. $row = mysqli_fetch_assoc($result)
+4. echo $row['_msg'];
+
+[PDO_MySQL 사용방법]
+1. $mysqli = mysqli_connect("database주소", "user", "password", "database이름"); : mysql에 접속
+2. if (mysqli_connect_errno($mysqlu)){echo"Failed to connect to MySQL: " .mysqli_connect_error( );
+3. $result = mysqli_query($mysqli, "SELECT 'A world full of ' AS _msg FROM DUAL");
+4. $row = mysqlu_fetch_assoc($result);
+5. ech $row['_msg'];
+
+[주요메서드]
+- mysqli_connect("database주소", "계정", "비밀번호", "테이블이름"); : mysql에 접속(link라고 부른다.)
+- mysqli_connect_errno( ) : mysql접속시 에러 발생 여부 반환
+- mysqli_error(link) : MySQL내에서 발생한 에러를 반환
+- mysqli_query( ) : query문 실패시 false 반환 / 읽기와 관련된 sql을 성공적으로 실행했을 경우 데이터테이블의 정보를 가진 obj 반환
+* 해당 값은 mysqli_fetch_데이터타입(결과값) 메서드를 통해 사용할 수 있도록 변환)
+- mysqli_fetch_데이터타입(결과값) : mysqli_query( ) 실행 시 얻을 수 있는 값을 원하는 데이터타입으로 변환한다.
+* 해당 값은 반환할 수 있는 열이 다수 일 경우 순차적으로 값을 반환하므로 반복문(별도의 비교연산자를 사용하지 않아도 null이 아닐경우 true로 간주한다.)을 통해 원하는 열의 값이 나올 때 까지 출력해야한다.
+* 반환할 값이 없을 경우 null을 반환(null은 false)
+
+[보안관련 메서드]
+- mysqli_real_escape_string(link, ' ') : 입력으로 들어오는 sql명령문을 일반 텍스트로 변환시켜 방어한다.
+
+* mysqli_multi_query( ) : 쿼리를 다중실행시키는 편리한 메서드이나 보안상 취약하기에 사용을 자제해야한다.
+[Tip]
+- MySQL 서버에서 로그 설정 변경
+* mysql general_log enable로 검색

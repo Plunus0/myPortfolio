@@ -1,0 +1,114 @@
+<열거형 : enum>
+관련된 상수들을 같이 묶어 놓은 것. JAVA는 타입에 안전한 열거형을 제공
+
+- 열거형의 정의
+enum 열거형이름 { 상수명1, 상수명2, . . .}
+*자동으로 0부터 값이 부여됨
+*열거형값의 상수들은 하나하나가 객체 타입임
+
+- 열거형 타입의 변수를 선언하고 사용하는 방법
+class Unit {
+int x, y;
+enum Direction { EAST, SOUTH, WEST, NORTH }
+Direction dir;
+void init( ) { dir = Direction.EAST; } }
+* 열거형 상수의 비교에 ==와 compareTo( ), equals( ) 사용가능
+* 비교연산자는 사용 불가능
+
+- 열거형의 조상 : java.lang.Enum클래스
+모든 열거형은 Enum의 자손이며, 아래의 메서드를 상속받는다.
+
+- Enum의 주요 메서드
+> Class<E> getDeclaringClass( ) : 열거형의 Class객체를 반환
+> String name( ) : 열거형 상수의 이름을 문자열로 반환
+> int ordinal( ) : 열거형 상수가 정의된 순서를 반환(0부터 시작)
+> v.getvalue( ) : 열거형 상수가 정의한 순서를 반환(지정한 수 부터 시작)
+> T valueOf(Class<T> enumType, String name) : 지정된 열거형에서 name과 일치하는 열거형 상수를 반환
+*values( ), valueOf( )는 컴파일러가 자동으로 추가
+> static E[ ] values( ) : 열거형의 모든 상수를 배열로 반환
+> static E valueOf(String name)
+열거형타입.상수이름
+열거형타입.valueOf("상수명")
+Enum.valueOf(열거형타입.class, "상수명") : 해당 값 가져오기
+
+- 열거형에 멤버 추가하기
+클래스 생성시 불연속적인 열거형 상수의 경우, 원하는 값을 괄호( ) 안에 적는다.
+enum Direction { EAST(1), SOUTH(5), WEST(-1), NORTH(10)}
+*괄호( )를 사용하려면, 인스턴스 변수와 생성자를 새로 추가해 줘야 한다.
+enum Direction{
+EAST(1), SOUTH(5), WEST(-1), NORTH(10) ; // ;추가 잊지말기
+private final int value; // 정수를 저장할 필드(인스턴스 변수)를 추가
+Direction(int value) { this.value = value;} // 생성자를 추가
+public int getValue( ) {return value;} }
+*생성자는 항상 private이므로 외부호출 불가
+
+<애너테이션 Annotation interface>
+주석처럼 프로그래밍 언어에 영향을 미치지 않으며, 유용한 정보를 제공
+*애너테이션은 인터페이스이며, 추상메서드를 별도로 구현하지 않아도 사용 가능
+- 사용 예시
+@Test // 이 메서드가 테스트 대상임을 테스트 프로그램에게 알린다.
+
+- Java에서 제공하는 표준 에너테이션
+> @Override : 컴파일러에게 오버라이딩하는 메서드라는 것을 알린다. (컴파일러가 자동체크)
+> @Deprecated : 앞으로 사용하지 않을 것을 권장하는 대상에 붙인다.
+> @SupperessWarnings : 컴파일러의 특정 경고메시지가 나타나지 않게 해준다.(2개 이상 가능)
+> @SafeVarargs : 지네릭스 타입의 가변인자에 사용 - JDK 1.7
+> @Functionallnterface : 함수형 인터페이스라는 것을 알린다. - JDK 1.8 (컴파일러가 자동체크, 함수형 인터페이스에는 하나의 추상메서드만 가져야함)
+> @Native : native메서드에서 참조되는 상수 앞에 붙인다. - JDK 1.8
+
+- 메타 애너테이션(애너테이션을 만들때 사용)
+> @Target* : 애너테이션이 적용 가능한 대상을 지정하는데 사용
+* 대상타입과 의미
+ANNOTATION_TYPE : 애너테이션
+CONSTRUCTOR : 생성자
+FIELD : 필드(멤버변수, enum상수)
+LOCAL_VARIABLE : 지역변수
+METHOD : 메서드
+PACKAGE : 패키지
+PARAMETER  : 매개변수
+TYPE : 타입(클래스, 인터페이스, enum)
+TYPE_PARAMETER : 타입 매개변수(JDK1.8)
+TYPE_USE : 타입이 사용되는 모든곳(JDK1.8)
+
+> @Documented* : 애너테이션 정보가 javadoc으로 작성된 문서에 포함
+> @Inherited* : 애너테이션이 자손 클래스에 상속
+> @Retention* : 애너테이션이 유지되는 범위를 지정
+* 유지정책과 의미
+SOURCE : 소스파일에만 존재. 클래스파일에는 존재하지 않음
+CLASS : 클래스 파일에 존재. 실행시에 사용불가. 기본값
+RUNTIME : 클래스 파일에 존재. 실행시에 사용가능
+*컴파일러에 의해 사용되는 애너테이션의 유지정책은 SOURCE이다
+*실행시에 사용 가능한 애너테이션의 정책은 RUNTIME이다.
+
+> @Repeatable* : 애너테이션을 반복해서 적용 - JDK 1.8
+
+- 애너테이션 타입 정의하기
+애너테이션을 직접 만들어 쓸 수 있다.
+> @interface 애너테이션이름 {
+타입 요소이름( ); // 애너테이션의 요소를 선언한다. }
+애너테이션의 메서드는 추상메서드이며, 애너테이션을 적용할 때 지정(순서X)
+> @interface TestInfo {
+int count( );
+String testedBy( );
+String[ ] testTools( );
+TestType testType( ); // enum TestType { FIRST, FINAL }
+DateTime testDate( );} // 자신이 아닌 다른 애너테이션(@DateTime)을 포함할 수 있다.
+*클래스 앞에 @애너태이션이름 으로 적용, 새로 작성한 추상메서드는 전부 구현
+
+- 애너테이션의 요소
+적용시 값을 지정하지 않으면, 사용될 수 있는 기본값 지정 가능(null제외)
+요소가 하나이고 이름이 value일 때는 요소의 이름 생략가능
+요소의 타입이 배열인 경우, 블럭{ }를 사용해야 한다
+
+- 모든 애너테이션의 조상 java.lang.annotation.Annotation
+Annotation은 모든 애너테이션의 조상이지만 상속은 불가
+
+- 마커 애너테이션 Marker Annotation
+요소가 하나도 정의되지 않은 애너테이션
+
+- 애너테이션 요소의 규칙
+애너테이션의 요소를 선언할 때 아래의 규칙을 반드시 지켜야 한다.
+1. 요소의 타입은 기본형, String, enum, 애너테이션, Class만 허용됨
+2. 괄호( ) 안에 매개변수를 선언할 수 없다
+3. 예외 선언 불가
+4. 요소를 타입 매개변수<T>로 정의할 수 없다.

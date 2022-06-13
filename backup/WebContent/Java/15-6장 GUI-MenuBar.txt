@@ -1,0 +1,43 @@
+[Menu]
+최상단 메뉴를 생성한다.
+
+<JMenuBar>
+가장 위에 보여지는 메뉴바
+- JmenuBar의 생성자
+> JMenuBar( ); // 기본생성자
+
+- JmenuBar의 주요메서드
+> setJMenuBar( ) : 생성된 JMenuBar를 부착한다.
+
+<JMenu>
+메뉴바에 속해있는 내용
+생성한 JMenu를 JMenuBar에 add 한다.
+* JMenu를 JMenuBar에 반복문으로 add 예시
+JMenu[] jm = new JMenu[5];
+String[] strMenu = {"File","Edit","Source","Project","Run"};
+for(int i=0;i<strMenu.length;i++) {
+jm[i] = new JMenu(strMenu[i]);
+jb.add(jm[i]);}
+
+- JMenu의 생성자
+> JMenu("메뉴명") // 기본생성자
+
+<JMenuItem>
+메뉴를 클릭시 나타는 추가항목
+생성한 JMenuItem을 JMenu에 add한다.
+Action 이벤트가 발생하며, [e.getActionCommand( )] // 액션이 발생한 문구를 리턴받아 if 혹은 Switch문으로 처리해준다.
+* JMenuItem을 JMenu에 반복문으로 add 예시
+JMenuItem[] ji = new JMenuItem[7];
+String[] strItem = {"New","Color","Font","Top","Bottom","Winter","Exit"};
+for(int i=0;i<strItem.length;i++) {
+ji[i] = new JMenuItem(strItem[i]);
+ji[i].addActionListener(new MyActionListener());
+jm[0].add(ji[i]);}
+
+- JMenuItem의 생성자
+> JMenuItem("항목명") // 기본생성자
+
+<JMenu시리즈 주요 메서드>
+메뉴에 줄을 긋는다.
+메뉴아이템에 추가 아이템이 나오게 할 수 있다.
+- setEnabled : 메뉴아이템을 활성화/비활성화 시킬 수 있다. (true : 활성화 / false : 비활성화)

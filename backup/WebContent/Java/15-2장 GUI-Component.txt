@@ -1,0 +1,154 @@
+[컴포넌트의 종류]
+Component : 모든 컴포넌트의 조상
+JComponent : 모든 스윙 컴포넌트의 조상
+
+<JLabel>
+단순한 문자열
+
+- JLabel의 생성자
+> JLable( ) // 기본 생성자
+> JLabel(Icon image)
+> JLable(String text)
+> JLable(String text, Icon image, int Alingment)
+
+<JButton>
+버튼, 이미지도 가능
+
+- JButton의 생성자
+> JButton() // 기본생성자
+> JButton(ImageIcon img)
+> JButton(String text)
+> JButton(String text, ImageIcon img)
+
+- 이미지 버튼 효과 메서드
+> setIcon(ImageIcon img) or setNomalIcon(ImageIcon img) : 버튼이 보통상태 일 때 출력될 이미지를 삽입
+> setRolloverIcon(ImageIcon img) : 버튼 위에 마우스가 올라가 있을 때 출력될 이미지 삽입
+> setPressedIcon(ImageIcon img) : 버튼을 마우스로 눌렀을 때 출력될 이미지 삽입
+
+<JCheckBox>
+itemEvent가 발생한다. 복수체크가 가능하며, 선택과 해제 두 상태가 있다.
+
+- JCheckBox의 생성자
+> JCheckBox() // 기본생성자
+> JCheckBox(ImageIcon img)
+> JCheckBox(ImageIcon img, Boolean selected)
+> JCheckBox(String text)
+> JCheckBox(String text, ImageIcon img, Boolean selected)
+
+- JCheckBox의 주요 메서드
+> setSelectedIcon(ImageIcon img) : 선택되었을 때 이미지 출력
+> setBorderPainted( ) : 체크박스 외곽선 보이게 설정 (true : 출력, false : 숨김)
+> setSelected(Boolean b) : 체크 처리
+> isSelected( ) : 선택되었는지 확인
+> setIcon(ImageIcon img) : 디폴트 이미지 출력
+
+<JRadioButton>
+단일체크만 가능한 CheckBox, ButtonGroup 안에 JRadioButton을 생성해야 단일체크를 적용 할 수 있다.
+
+- JRadioButton의 생성자
+> JRadioButton() // 기본생성자
+> JRadioButton(ImageIcon img)
+> JRadioButton(ImageIcon img, boolean selected)
+* ButtonGroup 적용 예시
+ButtonGroup br = new ButtonGroup();
+JRadioButton apple = new JRadioButton("사과");
+JRadioButton pear = new JRadioButton("배");
+JRadioButton cherry = new JRadioButton("체리", img);
+br.add(apple);
+br.add(pear);
+br.add(cherry);
+
+<JTextField>
+한줄의 Text 입력창을 구현, 문자열을 입력하는 도중에 엔터키를 치면 Action이벤트가 발생된다.
+<JTextArea>
+여러줄의 Text 입력, 기본적으로 스크롤바가 지원되지 않는다. (스크롤바 구현시 JScrollPane과 연결)
+
+- JTextField의 생성자
+> JTextField() // 기본생성자
+> JTextField(int cols) // 보여지는 칸 수(실제로는 더 써진다.)
+> JTextField(String text) // 초기 세팅 글자
+> JTextField(String text, int cols)
+
+- JTextArea의 생성자
+> JTextArea() // 기본생성자
+> JTextArea(int rows, int cols)
+> JTextArea(String text)
+> JTextArea(String text, int row, it cols)
+* JScrollPane 연결 예시(JTextArea가 JScrollPane에 부착되기에 추가로 컨텐츠팬에 붙이지 않아도 된다.)
+JScrollPane scroll = new JScrollPane(JTextArea text);
+
+- JText / JTextArea의 주요 메서드
+> getText( ) : 내부의 Text를 가져온다.
+> append( ) : 내부에 Text를 나타내게 한다.
+> setText(String str) : 내부에 str을 출력한다. 
+
+<JList<E>>
+제네릭 클래스이다. 문자, 이미지 등 여러개의 아이템들의 집합
+기본적으로 스크롤바가 지원되지 않는다. (스크롤바 구현시 JScrollPane과 연결)
+<JComboBox<E>>
+내부 항목을 선택할 수 있는 콤보박스, 리스트와 비슷하다
+
+- JList<E>의 생성자
+> JList<E>() // 기본생성자
+> JList<E>(Vector listData)
+> JList<E>(Object[] listdData)
+* JScrollPane 연결 예시(JTextArea가 JScrollPane에 부착되기에 추가로 컨텐츠팬에 붙이지 않아도 된다.)
+JScrollPane scroll = new JScrollPane(JList<E> list);
+
+- JList<E>의 주요 메서드
+> setListData( ) : 리스트 내부 데이터를 설정
+> getSelectedIndex( ) : 리스트 내부 데이터 중 하나를 선택
+> setVisibleRowCount(int i) : 보여줄 행의 갯수를 설정
+> setFixedCellHeight(int i) : 셀의 높이를 설정
+
+<JSlider>
+슬라이더 바를 출력하여 마우스로 값을 선택하도록 하는 컴포넌트
+changeEvent가 발생한다.
+
+- JSlider의 종류
+> JSlider.HORIZONTAL : 가로 방향 슬라이더
+> JSlider.VOERIVAL : 세로 방향 슬라이더
+
+- JSlider의 구성
+> knob : 손잡이
+> MajorTickSpacing : 큰 눈금
+> MinorTickSpacing : 작은 눈금
+> label : 표기 값
+> track : 트랙
+> value : 설정 값
+
+- JSlider의 생성자
+> JSlider() // 기본생성자
+> JSlider(int orientation) // 방향성(세로/가로)
+> JSlider(int min, int max, int value)
+
+- JSlider의 주요 메서드
+> setOrientation() : 방향 설정
+> setMinimum() : 최소값 설정
+> setMaximum() : 최대값 설정
+> setPaintLable(boolean b) : 값을 보이게 한다
+> setPaintTicks(boolean b) : 작은 눈금을 보이게 한다
+> setPaintTrack(boolean b) : 큰 눈금을 보이게하다
+
+> JPasswordField : Password 입력창
+> JPanel : 빈 창
+
+- 컴포넌트의 공통메서드(JComponent)
+> setForeground(글씨체, 폰터설정, 글씨크기) : 전경색(글자) 설정
+> setBackground( ) : 배경색 설정
+* 배경색 설정시 Color.상수 혹은 RGB(0,0,0) 등으로 설정한다.
+> getX( ), getY( ) : Component의 X, Y 좌표 반환
+> setLocation(x, y) : 위치 설정
+> setSize(x, y) : 크기 설정
+> setEnable( ) : 사용 가능여부 설정
+> setVisible( ) : 활성화 여부 설정
+> isVisible( ) : 노출 여부 설정
+> setOpaque( ) : 불투명도 설정 // 투명 false, 불투명 true(디폴트)
+> add( ) : contantspane에 컴포넌트 부착
+> remove( ), removeAll : contantspane에 컴포넌트 삭제
+> getParent( ) : 상속된 부모 반환
+> getTopLevelAncestor( ) : 최상위 부모 컨테이너 반환
+> repaint( ) : 다시 그리기
+> revalidate( ) : 자식 컴포넌트 재배치 요청
+> setHorizontalAlignment(SwingContants.위치상수) : 가로 정렬
+> setVerticalAlignment(SwingContants.위치상수) : 세로 정렬

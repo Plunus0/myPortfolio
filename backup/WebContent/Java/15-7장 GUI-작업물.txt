@@ -1,0 +1,439 @@
+package Menu;
+
+import java.awt.Color;
+import java.awt.Container;
+import java.awt.FlowLayout;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
+
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+
+public class Ex001 extends JFrame{
+	
+	JButton[] btn = new JButton[4];
+	String[] strBtn = {"초승달","반달","보름달","Auto"};
+	JMenuBar jb = new JMenuBar();
+	JMenu[] jm = new JMenu[6];
+	String[] strJm = {"File","BackGround Color","Moon Color","Cloud","Star","Exit"};
+	JMenuItem[] jt1 = new JMenuItem[3];
+	JMenuItem[] jt2 = new JMenuItem[3];
+	JMenuItem[] jt3 = new JMenuItem[2];
+	JMenuItem jtN, jtS, jtE;
+	String[] strJt1 = {"Black","Blue","Pink"};
+	String[] strJt2 = {"White","SkyBlue","Yellow"};
+	String[] strJt3 = {"Add Cloud","Remove Cloud"};
+	Color[] color = {Color.black,Color.blue,Color.pink,Color.white,Color.yellow,new Color(0x00AAFF)};
+	Color moonColor = Color.CYAN;
+	Color crescent = Color.darkGray;
+	int cloudcount = 0;
+	int cc = 0;
+	int tc = 0;
+	int mpx = 196, mpy=135;
+	int mc = 1;
+	int cp=28;
+	int xx=786, yy=540;
+	int starCount = 100;
+	Point[] p;
+	int[] ss;
+	InPutDialog jd = new InPutDialog(this, "입력창", true);
+	boolean inp = false;
+	
+	
+	Ex001(){
+		setTitle("Ex001");
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setContentPane(new MyPanel());
+		
+		
+		setSize(800,600);
+		setResizable(false);
+		setVisible(true);
+	}
+	
+	class MyPanel extends JPanel{
+		ImageIcon starImic = new ImageIcon("images/star-spinning.gif");
+		Image starImg = starImic.getImage();
+		ImageIcon cloudImic = new ImageIcon("images/cloud.png");
+		Image cloudImg = cloudImic.getImage();
+		
+		MyPanel(){
+			setBackground(crescent);
+			addButton();
+			setRandom();
+			new starThread().start();
+			addMouseMotionListener(new MouseMotionAdapter() {
+				@Override
+				public void mouseDragged(MouseEvent e) {
+					// TODO Auto-generated method stub
+					Point draggedPoint = (Point)e.getPoint();
+					if(((draggedPoint.getX() < mpx+150) && (draggedPoint.getX() > mpx))&&
+						((draggedPoint.getY() < mpy+150) && (draggedPoint.getY() >mpy))) {
+					mpx = ((int)draggedPoint.getX())-75;
+					mpy = ((int)draggedPoint.getY())-75;
+					}
+				}
+			});
+			addMouseListener(new MouseAdapter() {
+				@Override
+				public void mousePressed(MouseEvent e) {
+					Point pressedPoint = (Point)e.getPoint();
+					if(((pressedPoint.getX() < mpx+150) && (pressedPoint.getX() > mpx))&&
+							((pressedPoint.getY() < mpy+150) && (pressedPoint.getY() >mpy))) {
+						mpx = ((int)pressedPoint.getX())-75;
+						mpy = ((int)pressedPoint.getY())-75;
+					}
+				}
+			});
+			creatMenu();
+		}
+		
+		@Override
+		protected void paintComponent(Graphics g) {
+			super.paintComponent(g);
+			creatMoon(g, mc);
+			if(mc == 4 && tc == 0) {
+				new crescentThread().start();
+				tc++;
+			}else if(mc < 4 && tc != 0){
+				new crescentThread().stop();
+				tc = 0;
+			}
+			creatCloud(g, cloudcount);
+			creatStar(g);
+		}
+		
+		void addButton() {
+			
+			for(int i=0;i<btn.length;i++) {
+				btn[i] = new JButton(strBtn[i]);
+				btn[i].addActionListener(new ActionListener() {
+					
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						// TODO Auto-generated method stub
+						JButton btn = (JButton)e.getSource();
+						switch(btn.getText()) {
+						case "초승달" :
+							mc = 1;
+							break;
+						case "반달" :
+							mc = 2;
+							break;
+						case "보름달" :
+							mc = 3;
+							break;
+						case "Auto" :
+							mc = 4;
+							break;
+						}
+					}
+				});
+				add(btn[i]);
+			}
+		}
+		
+		void setRandom() {
+			p = new Point[starCount];
+			ss = new int[starCount];
+			for(int i=0;i<p.length;i++) {
+				p[i] = new Point((int)((int)(xx*((int)((Math.random()+0.1)*15)*0.07))*0.9),(int)((int)(yy*((int)((Math.random()+0.1)*15)*0.07))*0.9));
+			}
+			for(int i=0;i<ss.length;i++) {
+				ss[i] = (int)(Math.random()*10)+20;
+			}
+		}
+		
+		void creatCloud(Graphics g, int ccount) {
+			cloudcount = ccount;
+			if(cloudcount == 1) {
+				creatCloud1(g);
+			}else if(cloudcount == 2) {
+				creatCloud2(g);
+			}else if(cloudcount == 3) {
+				creatCloud3(g);
+			}
+		}
+		void creatCloud1(Graphics g) {
+			g.drawImage(cloudImg, 100, 250, 250, 150, this);
+		}
+		void creatCloud2(Graphics g) {
+			creatCloud1(g);
+			g.drawImage(cloudImg, 330, 125, 200, 100, this);
+		}
+		void creatCloud3(Graphics g) {
+			creatCloud2(g);
+			g.drawImage(cloudImg, 450, 325, 220, 130, this);
+		}
+		
+		void creatStar(Graphics g) {
+			for(int i=0;i<p.length;i++) {
+				g.drawImage(starImg, p[i].x, p[i].y, ss[i], ss[i], this);
+			}
+		}
+		
+		void movingStar() {
+			for(int i=0; i<p.length; i++) {
+				int yDir = Math.random()>0.5?1:-1;
+				int offsetY = (int)(Math.random()*2)*yDir;
+				
+				p[i].y += offsetY;
+				if(p[i].y < 0) {
+					p[i].y = 0;
+				}
+				if(p[i].y > 510) {
+					p[i].y = 510;
+				}
+			}
+		}
+
+		void creatMoon(Graphics g, int mc) {
+			switch(mc) {
+			case 1:
+				Moon1(g);
+				break;
+			case 2:
+				Moon2(g);
+				break;
+			case 3:
+				Moon3(g);
+				break;
+			case 4:
+				Moon4(g);
+				break;
+			}
+		}
+		
+		void Moon1(Graphics g) {
+			Moon3(g);
+			g.setColor(crescent);
+			g.fillArc(mpx+28, mpy-28, 150, 150, 0, 360);
+		}
+		void Moon2(Graphics g) {
+			Moon3(g);
+			g.setColor(crescent);
+			g.fillArc(mpx+45, mpy-45, 150, 150, 0, 360);
+		}
+		void Moon3(Graphics g) {
+			g.setColor(moonColor);
+			g.fillArc(mpx, mpy, 150, 150, 0, 360);
+		}
+		void Moon4(Graphics g) {
+			Moon3(g);
+			g.setColor(crescent);
+			g.fillArc(mpx+cp, mpy-cp, 150, 150, 0, 360);
+		}
+		void makeCrescent() {
+			if(cc==0) {
+				cp++;
+				if(cp==115) {
+					cc=1;
+				}
+			}else if(cc==1) {
+				cp--;
+				if(cp==28) {
+					cc=0;
+					try {
+						Thread.sleep(3000);
+					}catch(InterruptedException e) {
+						return;
+					}
+				}
+			}
+		}
+
+		void creatMenu() {
+			for(int i=0;i<strJm.length;i++) {
+				jm[i] = new JMenu(strJm[i]);
+				jb.add(jm[i]);
+			}
+			
+			jtN = new JMenuItem("New");
+			jtN.addActionListener(new MyMenuListener());
+			jm[0].add(jtN);
+			
+			for(int i=0;i<strJt1.length;i++) {
+				jt1[i] = new JMenuItem(strJt1[i]);
+				jm[1].add(jt1[i]);
+				jt1[i].addActionListener(new MyMenuListener());
+			}
+			
+			for(int i=0;i<strJt2.length;i++) {
+				jt2[i] = new JMenuItem(strJt2[i]);
+				jm[2].add(jt2[i]);
+				jt2[i].addActionListener(new MyMenuListener());
+			}
+			
+			for(int i=0;i<strJt3.length;i++) {
+				jt3[i] = new JMenuItem(strJt3[i]);
+				jm[3].add(jt3[i]);
+				jt3[i].addActionListener(new MyMenuListener());
+			}
+			
+			if(cloudcount == 0) {
+			jt3[1].setEnabled(false);
+			}
+			
+			jtS = new JMenuItem("Star");
+			jm[4].add(jtS);
+			jtS.addActionListener(new MyMenuListener());
+			
+			jtE = new JMenuItem("Exit");
+			jm[5].add(jtE);
+			jtE.addActionListener(new MyMenuListener());
+			
+			setJMenuBar(jb);
+		}
+		class MyMenuListener implements ActionListener{
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String cmd = e.getActionCommand();
+				switch(cmd) {
+				case "New" :
+					new Ex001();
+					break;
+				case "Exit" :
+					dispose();
+				case "Black" :
+					setBackground(color[0]);
+					crescent = color[0];
+					break;
+				case "Blue" :
+					setBackground(color[1]);
+					crescent = color[1];
+					break;
+				case "Pink" :
+					setBackground(color[2]);
+					crescent = color[2];
+					break;
+				case "White" :
+					moonColor = color[3];
+					break;
+				case "Yellow" :
+					moonColor = color[4];
+					break;
+				case "SkyBlue" :
+					moonColor = color[5];
+					break;
+				case "Add Cloud" :
+					if(cloudcount < 3) {
+						cloudcount ++;
+						if(cloudcount == 3) {
+							jt3[0].setEnabled(false);
+						}
+						if(cloudcount != 0){
+							jt3[1].setEnabled(true);
+						}
+					}
+					break;
+				case "Remove Cloud" :
+					if(cloudcount > 0) {
+					cloudcount --;
+						if(cloudcount == 0) {
+							jt3[1].setEnabled(false);
+						}
+						if(cloudcount != 3){
+							jt3[0].setEnabled(true);
+						}
+					}
+					break;
+				case "Star" :
+					jd.setVisible(true);
+					inp = true;
+					while(true) {
+					if(inp==true) {
+						starCount = Integer.valueOf(jd.getInput());
+						setRandom();
+						}
+					else if(inp==false){
+					} 
+					break;
+					}
+				}
+			}
+		}
+		class starThread extends Thread{
+			@Override
+			public void run() {
+				while(true) {
+					
+					movingStar();
+					repaint();
+					try {
+						sleep(100);
+					}catch(InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+		class crescentThread extends Thread{
+			@Override
+			public void run() {
+				while(true) {
+					makeCrescent();
+					try {
+						sleep(300);
+					}catch(InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+	}
+	
+	class InPutDialog extends JDialog{
+		
+		JTextField jf = new JTextField(10);
+		JButton btn = new JButton("입력완료");
+		
+		InPutDialog(JFrame frame, String title, boolean modal){
+			super(frame,title,modal);
+			
+			Container c = getContentPane();
+			c.setLayout(new FlowLayout());
+			c.setBackground(Color.LIGHT_GRAY);
+			c.add(jf);
+			c.add(btn);
+			btn.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					// TODO Auto-generated method stub
+					setVisible(false);
+					inp = false;
+				}
+			});
+			
+			setSize(200,100);
+			setLocation(300,300);
+		}
+		
+		String getInput() {
+			if(jf.getText().length() == 0) {
+				return null;
+			}else {
+				return jf.getText();
+			}
+		}
+	}
+	
+	public static void main(String[] args) {
+		new Ex001();
+	}
+
+}

@@ -1,0 +1,23 @@
+<IntelliJ>
+
+- 새 프로젝트 생성
+New Project > Java 클릭 > Project SDK에서 Java버전 확인 후 Next > Create project from telplate 체크 후 Command Line App 선택 후 Next > 프로젝트명, 패키지명 작성 후 Finish
+
+<import와 export>
+- Import : 압축상태가 아닌 폴더로 Import를 진행한다. (겉에 불필요한 폴더 없어야함)
+1. Import할 폴더를 IdeaProjects 폴더로 복사(일반적으로 C드라이브의 User > 사용자 폴더 내에 있다.)
+2. IntelliJ 실행 후 Projects 탭 Open 클릭 후 해당 폴더 선택 후 Maven project 선택
+* 만약 잘못 선택했다면 복사한 폴더를 삭제 후 재진행
+3-1. 우측상단 컴파일 옆 Add Configuration > +(New) > 하단 Tomcat Server의 Local 선택
+3-2. Server 탭의 Name작성(톰캣 서버버전), Application Server의 Configure > Tomcat이 설치된 폴더 선택 > HTTP port 입력(기본 8080)
+3-3. Deployment 탭의 +(New) 선택 > Artifact > Import한 폴더명.war 선택(압축의 차이) > Application context 설정 > OK
+4. 컴파일해서 상태 확인
+
+<Tomcat Library 추가>
+File > Project Structure > Labraries 탭 의 + 선택 > Tomcat설치폴더의 Lib선택 > 추가될 프로젝트 확인 후 OK > Name입력(이해 쉬운 이름 : apache tomcat 9.0 library 등) > 우측상단 build와 컴파일을 실행하여 상태확인
+
+<UTF-8로 인코딩>
+Set project encoding to ~ > 자동으로 인코딩 해줌
+
+<Reload>
+프로젝트 우클릭 > Maven > Reload project

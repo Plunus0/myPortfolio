@@ -1,0 +1,21 @@
+<다이나믹(동적) SQL>
+마이바티스의 mapper에서 JSTL의 제어문을 활용하여 SQL을 상황에 맞게 선택하는 것
+
+- 제어문의 종류(JSTL)
+if ,choose(when, otherwise), trim(where, set), foreach
+
+- 예시
+<insert id="insert" parameterType="com.web.vo.CgvBoardVO">
+insert into cgv_board
+<choose>
+<when test='bfile != null'>
+values ('b_'||sequ_cgv_board_bid.nextval,#{btitle},#{bcontent},0,sysdate,#{bfile},#{bsfile})";
+</when>
+<otherwise>
+values ('b_'||sequ_cgv_board_bid.nextval,#{btitle},#{bcontent},0,sysdate,null,null)";
+</otherwise>
+</choose>
+</insert>
+
+* JSTL 내부는 JAVA문법에 따라 작성한다.(EL태그는 사용하지 않아도 된다.)
+* 값이 입력되지 않아도 될 경우 비어놓는게 아닌 null로 처리한다.

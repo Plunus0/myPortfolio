@@ -1,0 +1,17 @@
+Spring의 예외처리
+
+1. 컨트롤러 메서드 내에서 try-catch로 처리 : Controller에서 예외가 발생되면 내부적(try-catch)으로 처리 가능한지 확인 후 불가능하면 Dispatcher Servlet에게 예외를 넘긴다.
+
+2. Dispatcher Servlet은 예외처리를 위해 hadlerExceptionResolvers라는 인스턴스변수(List Type)에 담겨있는 기본 전략을 순서대로 실행한다.
+
+2-1. ExceptionHandlerExceptionResolver 항목
+컨트롤러(@Controller or @ControllerAdvice)의 @ExceptionHandler메서드가 처리 : 해당 예외를 처리할 수 있는 메서드(@ExceptionHandler)를 찾아서 결과(view)를 DispatcherServlet에게 반환
+
+2-2. ResponseStatusExceptionResolver 항목
+예외 종류에 따른 처리(SimpleMappingExceptionResolver) : servlet-context.xml에 입력된 예외종류와 연결된 에러뷰를 확인하여 결과(view)를 DispatcherServlet에게 반환
+
+상태코드에 따른 처리(ResponseStatusExceptionResolver) : @ResponseStatus 애너테이션을 찾아 web.xml에서 해당 상태코드에 맞는 에러 뷰를 확인하여 결과(view)를 DispatcherServlet에게 반환
+
+2-3. DefaultHandlerExceptionResolver : 스프링에 정의된 기본적인 예외의 상태코드 500을 상황에 맞는 코드로 변환해준다.
+
+3. DispatcherServlet는 반환받은 결과를 Client에게 응답

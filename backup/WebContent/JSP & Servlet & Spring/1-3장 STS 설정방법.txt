@@ -1,0 +1,177 @@
+[STS]
+-STS설정 순서
+1. STS 설치
+2. 기존서버 삭제 및 새 서버 연결(전면화면 및 설정)
+* JDK와 서버는 STS 호환에 문제가 없는것으로 선택
+3. 포트번호 변경 : server.xml
+4. 브라우저 요청 문자 인코딩 : web.xml
+5. STS 내 문자 인코딩 : 설정
+6. 실행 브라우저 : 설정
+7. 프로젝트 내 라이브러리 추가 : JDK, Server
+* DataBase연결 시 라이브러리 추가
+
+- STS Project 시작
+1-1. 기본 프로젝트 : New > Spring Legacy Project : Spring Project
+1-2. Boot 프로젝트 : New > Spring Starter Project : Spring Boot Project
+2. 프로젝트명 입력 및 템플릿선택(Spring MVC Project)
+* Templates에서 Batch폴더와 Persistence폴더(Spring MVC Project 파일)가 없다면 Configure templates... 선택 후 spring-data-gemfire와 spring-integration 삭제 후 적용
+3. 패키지 구조 설정 : com.fastcampus.app [3단계 이상]
+* 보통 도메인을 역순으로 작성
+* 맨 마지막 단어는 URL의 Context Path가 된다.
+
+* src file에는 *.java, *.jsp file들이 있다.
+* target file에는 *.class file들이 있다.
+
+- 컨트롤러(JAVA) 저장/생성 위치
+프로젝트 폴더 > src/main/java > 해당패키지
+* 역할을 명확히 하기 위해 *Controller.java로 명명한다.
+* 컨트롤러는 기능별로 만드는것을 권장한다.
+* 최초패키지만 등록이 되어있으므로 추가생성 패키지는 설정을 해야 읽어올 수 있다.
+* src파일 내 servlet-context.xml 수정
+
+- 뷰(JSP) 저장/생성 위치
+프로젝트폴더 > src > main > webapp > WEN-INF > views *.jsp
+* 위치가 다르면 실행이 안된다.
+
+- 리소스파일(.css, .js, img) 저장/참조 위치
+webapp>resources에 있어야 한다.
+* servlet-context.xml에서 설정할 수 있다.
+<resources mapping="/resources/css/**" location="/resources/css/" />
+
+- 정적 리소스 URL 경로 중 resources 단어 삭제하기
+프로젝트 폴더 > src > main > webapp > WEB-INF > spring > appServlet > servlet-context.xml(web관련 설정파일) > 16Line mapping에서 resources/삭제
+*root-context.xml(non web관련 설정파일)
+
+- 스프링 프레임워크 파일 열기
+스프링 프레임워크에서는 저장위치가 실행경로가 되지 않는다.
+ip주소:포트번호/contextroot/ ~ 로 실행된다.
+* 보안에 좋음
+* url-pattern변경 시 프로젝트 내부의 web.xml에서 변경( / 또는 *.do 등 원하는 패턴을 설정할 수 있다.
+
+- 서버 연결
+기본 내장 VM서버는 이용하지 않는다. (톰캣 버전이 너무 낮음)
+* 폴더와 서버콘솔 전부 삭제
+
+1. Preferences의 Server > Runtime Environments
+2. 기본 서버(VM)이 있다면 삭제 및 Add클릭
+3. 설치된 Tomcat버전 선택 후 next
+3. tomcat이 설치된 경로 확인 (Browse..)
+4. Servers tap 에서 등록한 Tomcat 선택
+
+- Web Browser 설정
+Preferences > General > Web Browser > Use extemal web browser > Chrome
+
+- Build Path 설정(JAVA, Tomcat)
+JAVA : Build Path > Configure Build Path > Libraries > Add Library > JRE System Library > 사용버전 선택
+* 기본은 1.1로 구버전이 등록되어 있다.
+* Maven Dependencies는 필수로 등록되어있어야 한다.(기본)
+
+* Server : Build Path > Configure Build Path > Libraries > Add Library > Server Runtime > 사용버전 선택
+
+- Method 자동 생성
+Method의 실행부로 사용될 코드를 묶어 마우스 우클릭 > Refactor > Extract Method ... 를 누르면 자동으로 Method를 생성할 수 있도록 도와준다.
+
+- STS에서 Terminal 실행
+1. 해당 프로젝트 내 target폴더 우클릭 > Show In > Terminal 실행
+2. 열린 Terminal에서 cd classes 입력(classes폴더로 접근)
+3. java 패키지명.클래스명 매개변수값입력
+* 매개변수의 값은 String배열로 들어간다(띄어쓰기로 구분)
+
+- STS Debug Mode 실행
+해당 프로젝트 우클릭 > Debug As > Debug on Server 실행
+* 소스파일 내 우클릭으로 Break Point를 설정할 수 있다. (Debug 중 해당 부분까지만 실행)
+
+- 프로젝트 설정 수정 후 업데이트
+프로젝트 우클릭 > Maven > Update Project ...  
+
+- servlet-context.xml
+빈 컨테이너가 빈을 생성하고 요청하는 작업을 servlet-context에서 한다.
+
+- STS Spring Version 업데이트
+프로젝트폴더 > target > pom.xml > 12Line : <org.springframework-version> > update version 입력 > 프로젝트폴더 우클릭 > Maven > Update Project
+
+- STS Compiler Version 변경
+Preferences > compil검색 > Compiler > Compiler compliance level
+* 완료 후 프로젝트 업데이트
+
+- JAVA Version 변경
+프로젝트폴더 > target > pom.xml > properties tag > java-version tag 수정 > plugin tag > source, target tag > ${java-version}
+* 완료 후 프로젝트 업데이트
+
+- jsp에서 java로 변환된 파일 위치 확인하기
+Run옆의 화살표 > Run Configurations > Arguments탭 > VMarguments 내 deploy 경로 복사 > 윈도우 탐색기에서 검색후 한 단계 위로 > work > Catalina(서버이름) > ip주소폴더 > 프로젝트폴더 > org > apache > jsp에 있다. (WEB_002dINF 폴더는 Spring에서 사용하는 view폴더가 변환된 것)
+* 적용이 제대로 안될 때 해당 파일을 삭제해서 리셋
+* 간단한 방법으로 STS의 Server탭 창에서 서버 우클릭하여 Clean Tomcat WorkDirectory를 눌러줘도 된다.
+
+- 처리할 내용(Controller) 없이 바로 View만 return하는 경우 <view-controller>활용하기
+@RequestMapping을 작성할 필요없이 프로젝트 src > main > webapp > WEB-INF > spring > appServlet > servlet-context.xml 내부에 <mvc:view controller path="URL" view-name="ViewURL"/> 입력
+* 해당 주소를 따로 맵핑하지 않아도 입력한 View로 연결된다.
+* xmlns:mvc가 생략된 경우 mvc를 생략해도 된다.
+* GET요청만 접근이 가능하다. (POST는 불가)
+
+- beans:beans tag 설명
+프로젝트 폴더 > src > main > webapp > WEB-INF > spring > appServlet > servlet-context.xml > beans:beans에는 각 스키마에서 정의한 tag를 사용하기 위해 적어둔 것이다. (xmlns) 원래는 각 xmlns마다 접두사를 적어두고 해당하는 태그에 접두사를 맵핑해줘야하나 총 4개 중 하나는 접두사를 생략해도 된다. (mvc , xsi, beans, context) 생략된 하나는 자동적으로 적혀있지 않은 나머지 하나가 되며 접두사가 생략된 스키마에 정의된 tag들 또한 생략된 나머지 하나가 있는 것이다.
+
+- 포트번호 변경
+Servers 폴더 > server.xml > port번호 변경(약 60 Line)
+
+- 인코딩(Encording) 처리(한글이 깨질 때)
+이클립스 : window > preferences > enc > HTML,CSS,JSP UTF-8로 변경
+
+서버 : web.xml > 498~507 Line 주석해제 및 506Line(async-supported 부분)은 주석처리 > 595~598 Line 주석해제
+* setCharacterEncoding 검색
+
+- 콘솔창의 글자색상
+빨간색 : JAVA EE
+검은색 : 스프링 라이브러리
+
+- 모든 파일 내에서 텍스트 변경하기
+Search(ctrl+h) > File Search > Containing text : 변경 전 텍스트 > Replace > 변경할 텍스트 입력 후 OK
+
+- 상태코드 별 error-view 맵핑(여러개를 생성할 수 있다.)
+프로젝트 src > main > webapp > WEB-INF > web.xml
+<error-page>
+<error-code>에러코드번호</error-code>
+<location>view파일의위치</location>
+</error-page>
+
+- 예외종류 별 뷰 맵핑에 사용(SimpleMappingExceptionResolver)
+프로젝트 src > main > webapp > WEB-INF > spring > appServlet
+
+<beans:bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+<beans:property name="defaultErrorView" value="error"/>
+<beans:property name="exceptionMappings">
+<beans:props>
+
+<beans:prop key="com.fastcampus.ch2.MyException">error400 // 예시 예외종류 : 에러 뷰 이름
++++추가+++
+</beans:prop>
+</beans:props>
+</beans:property>
+<beans:property name="statusCodes">
+<beans:props>
+
+<beans:prop key="error400">400</beans:prop> // 해당 뷰에 대한 상태코드를 적는다.
+
+</beans:props>
+</beans:property>
+</beans:bean>
+
+<import와 export>
+- STS -> IntelliJ
+STS프로젝트 우클릭 > Export > General > Archive File > Browse.. 클릭 후 압축(.zip)파일이 만들어질 경로 설정 > Finish
+
+- Import
+file > Import > General > Existion Projects into Workspace > Select archive file(.zip)의 Browse 선택 > Import할 압축(.zip)파일 선택 > Finish
+* 이후 필요에 따라 소스파일을 수정한다.
+
+- Maven
+Spring의 Library를 관리하는 역할 : 필요 Library가 있다면 pom.xml에서 관리한다.
+* Maven이 없다면 jar을 직접 Library에 추가해주어야 한다.
+
+****STS삭제방법****
+1. 연결된 Server종료
+2. STS 종료
+3. sts-bundel 삭제
+4. Spring Labrary를 관리하는 Maven 삭제
+* C:\Users\User\.m2에 있다.

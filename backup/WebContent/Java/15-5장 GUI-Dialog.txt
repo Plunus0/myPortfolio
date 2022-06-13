@@ -1,0 +1,69 @@
+<대화상자(Dialog)>
+JDialog를 상속받아 구현
+최초 setVisible은 false이며, 이벤트를 통해 true로 변경하여 작동시킨다.
+
+- JDialog를 상속받은 클래스의 생성자
+생성한 클래스명(JFrame frame, String title, boolean modal){
+   super(frame,title,modal);
+   +윈도우창의 구현내용}
+* 모달과 모달리스
+모달(true) : 대화창이 열리면 이 창을 닫기 전까지는 다른 창을 작업할 수 없다.
+모달리스(false) : 각각 개별적으로 작동한다.
+
+- JDialog의 주요 메서드
+getInput( ) : 문자로 입력받는다.
+setVisible( ) : 창의 나타냄여부 true/false
+
+- 사용자가 만들지 않아도 기본으로 제공하는 Dialog
+1. showConfirmDialog(Dialog 위치, Dialog의 내용, Dialog의 타이틀, Dialog종류) : 확인Dialog
+int result = JOptionPane.showConfirmDialog(getParent(), "계속하시겠습니까", "ConfirmDialog", JOptionPane.YES_NO_CANCEL_OPTION);
+if(result==JOptionPane.YES_OPTION) {
+JTextField tf(int i).setText("YES를 선택하셨습니다.");
+}else if(result == JOptionPane.NO_OPTION){
+JTextField tf(int i).setText("NO를 선택하셨습니다.");
+}else if(result == JOptionPane.CANCEL_OPTION) {
+JTextField tf(int i).setText("Cancel을 선택하셨습니다.");}
+* YES, NO ,CANCEL 3종류로 반환을 하며, 반환 결과에 따라 다른 결과를 리턴하게 만든 구조(1, 0, -1 반환하기에 int 타입)
+
+2. showMessageDialog(Dialog 위치, Dialog의 내용, Dialog의 타이틀, 에러Dialog) : 에러메세지 Dialog
+JOptionPane.showMessageDialog(null, "오늘도 즐겁고 행복합니다.", "Message Dialog", JOptionPane.ERROR_MESSAGE);
+Dialog 위치에 null값을 줄 경우 ******(미확인)******
+
+3. showMessageDialog(Dialog 위치, Dialog의 내용, Dialog의 타이틀, 경고Dialog) : 경고메세지 Dialog
+JOptionPane.showMessageDialog(null, "파일을 선택하지 않았습니다.", "Warning Dialog", JOptionPane.WARNING_MESSAGE);
+
+* 그림파일을 읽어서 출력하는 알고리즘 예시
+JMenuItem jt = new JMenuItem("Open");
+jt.addActionListener(new OpenListener( )); // 메뉴아이템 클릭시 발생이벤트를 상속받은 클래스 실행
+class OpenListener implements ActionListener{
+public OpenListener() {JFileChooser jc = new JFileChooser(); // 파일선택클래스 선언
+@Override // 발생이벤트를 오버드라이브한다
+public void actionPerformed(ActionEvent e) {
+FileNameExtensionFilter filter = new FileNameExtensionFilter("JPG & GIF Images", "jpg", "gif"); // 선택할 파일이름의 제한사항
+jc.setFileFilter(filter); // 제한사항을 설정
+int ret = jc.showOpenDialog(null); // 비정상종료 일 경우 실행
+
+if(ret != JFileChooser.APPROVE_OPTION) {
+JOptionPane.showMessageDialog(null, "파일을 선택하지 않았습니다.", "경고", JOptionPane.WARNING_MESSAGE);
+return;} // 정상종료 가 아닐 때 출력
+// 정상종료일 경우 아래 실행
+String filePath = jc.getSelectedFile().getPath(); // 선택한 경로의 주소를 저장
+imgLabel.setIcon(new ImageIcon(filePath));
+System.out.println(filePath); 
+pack( );} //이미지 크기에 맞춰서 프레임 크기를 조절한다.}}
+
+* 색상팔레트를 출력 알고리즘 예시
+JMenuItem ji = new JMenuItem("Color");
+ji.addActionListener(new MenuListener()); // 메뉴아이템 클릭시 발생이벤트를 상속받은 클래스 실행
+class MenuListener implements ActionListener{
+JColorChooser cc = new JColorChooser(); // 컬러선택클래스를 선언
+Color selectedColor;
+@Override // 발생이벤트를 오버드라이브한다
+public void actionPerformed(ActionEvent e) {
+String cmd = e.getActionCommand();
+switch(cmd) {
+case "Color" :
+selectedColor = cc.showDialog(null, "칼라다이얼로그", Color.blue); 컬러선택도구를 보여준다.
+break;}
+if(selectedColor != null) {
+la.setForeground(selectedColor);}}} // 색상을 선택했을 경우 해당 색상으로 설정

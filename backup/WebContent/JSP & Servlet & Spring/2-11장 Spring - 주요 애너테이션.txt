@@ -1,0 +1,178 @@
+애너테이션의 종류
+
+[@Controller]
+@Controller
+클래스 앞에 선언하며 원격 호출이 가능한 프로그램으로 등록
+해당 애너테이션을 등록해야 스프링에서 관리를 시작한다.
+
+[@RequestMapping]
+@RequestMapping("URL주소") :
+호출하려는 메서드 앞에 선언하며 URL과 프로그램(호출할 메서드)을 연결
+* 반환타입이 없는 Controller의 경우 작업결과를 보여줄 View의 이름이 된다.
+FORM tag를 POST방식으로 설정하더라도 Spring내에서는 Default로는 GET과 POST접근 둘다 허용한다.(method={RequestMethod.POST, RequestMethod.POST}) 따라서 클라이언트가 강제로 GET방식으로 접근할 수 있기에 이를 제한할 수 있다.(@PostMapping으로 간단하게 작성 가능, Spring 4.3버전 이상)
+* @RequestMapping(value="URL주소", method=RequestMethod.POST) == @PostMapping("URL")
+* URL의 이름은 /+메서드와 이름과 동일하게 한다.
+* 같은 URL은 있을 수 있으나 GET방식은 동시에 두개가 공존할 수 없다. 하나는 반드시 POST방식으로 설정해줘야 한다.
+* POST방식으로 데이터를 받을 땐 항상 VO 객체로 데이터를 받아 자동맵핑되게 해준다.
+
+[@GetMapping / @PostMapping]
+데이터 요청방식을 제한할 수 있는 애너테이션, 스프링 4.3버전부터 사용가능하다.(이전 버전은 @RequestMapping에서 설정 가능)
+@PostMapping("URL") / @GetMapping("URL")
+
+[@ResponseBody]
+@RequestMapping으로 들어온 요청의 응답을 View로 리턴하는게 아닌 JS나 jQuery로 되돌려주는 애너테이션, @RequestMapping과 같은 메서드(로직)에 사용한다.
+(= @RestController : 메서드 앞에 매번 붙이지 않고 클래스 앞에 한번만 붙여서 역할을 대신할 수 있다.(Controller 대신 사용))
+
+[@RequestBody]
+Ajax로부터 요청받은 매개변수를 java 메서드의 매개변수로 지정해주는 애너테이션, 매개변수 앞에 선언한다.
+
+[@WebServlet]
+@WebServlet("URL주소") : Servlet에서 사용되는 애너테이션으로 Controller+@RequestMapping을 합친 어노테이션, URL 패턴을 등록할 수 있다.
+여러개의 URL을 입력할 수 있다.
+* @WebServlet(urlPatterns={"/hello","/hello/*"}, loadOnStartup=1)
+서블릿은 기본적으로 Lazy init(늦은 초기화)지만 우선순위를 설정하여 미리 초기화를 해둘 수 있다. (loadOnStartup=1)
+
+[@WebFilter]
+중복을 없애고 간결히 하려는 코드의 분리작업을 하는 애너테이션
+서블릿이 다양한 요청을 처리할 때 전처리, 처리, 후처리의 과정을 거치지만 Filter를 두어 전처리, 후처리를 별도로 합쳐둔 것 서블릿은 호출 받을 경우 처리 업무만 진행
+* 공통적인 요청 전처리와 응답 후처리에 사용(로깅, 인코딩 등)
+* 전처리와 후처리는 선택사항으로 필수적이지는 않다.
+Filter를 다중으로 둘 수 있다. 이 경우 순서에 따라 Filter1의 전처리 후 Filter2의 전처리 후 서블릿을 호출하며, 후처리시에는 역순으로 Filter2의 후처리 후 Filter2의 후처리를 진행한다.
+
+- Filter 사용방법
+@WebFilter(urlPatterns="/*")
+//필터사용 어노테이션 작성 및 필터를 적용할 요청의 패턴지정 (*은 모든 요청에 필터를 적용)
+public class PerformanceFilter implements Filter {
+@Override
+public void init(FilterConfig filterConfig) throws ServletException{
+초기화작업}
+
+@Override
+public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException{
+1. 전처리작업
+2. 서블릿 또는 다음 필터를 호출
+3. 후처리작업}
+
+@Override
+public void destroy( ) {
+정리작업}
+}
+
+[@RequestParam]
+요청의 파라미터의 제한사항을 연결할 매개변수에 붙이는 애너테이션
+애너테이션 1개당 1개의 매개변수값을 맵핑해줄 수 있다. 필요하다면 매개변수들 마다 입력해주어야함
+컨트롤러 매개변수의 타입이 기본형, String일 경우 @RequestParam을 사용한다. 참조형일땐 사용불가능(여러개의 값이 바인딩되어서)
+
+* 사용예시
+@RequestMapping("/requestParam2") 일 때,
+
+- 파라미터값이 필수가 아닐 경우(required=false)
+> public String main(@RequestParam(name="year" required=false) String year)
+> public String main2(String year)
+* 두 문장이 같은 의미이며 아래 문장에는 @RequestParam(name="year" required=false)이 생략된 형태(생략가능)
+* name="year" 은 파라미터의 이름, required=false 는 필수여부 확인
+* URL에서 ?year 값이 넘어올 경우 null값이 아닌 빈 문자열이 등록된다. 언급조차 되지 않을 경우 null
+* 필수입력이 false일 경우 매개변수의 타입에 따라 에러가 발생할 가능성이 높기때문에 @RequestParam(defaultValue="값") 을 통해 초기값을 지정해주어야한다.(빈문자열로 받은 경우 빈문자열이 아닌 초기값으로 등록된다)
+
+- 파라미터값이 필수일 경우(required=true)
+> public String main(@RequestParam(name="year" required=true) String year)
+> public String main(@RequestParam String year)
+* 두 문장이 같은 의미이며 아래 문장에는 (name="year" required=true)이 생략된 형태(생략가능)
+* name="year" 은 파라미터의 이름, required=true 는 파라미터값의 존재 필수여부 확인
+* URL에서 ?year 값이 넘어올 경우 null값이 아닌 빈 문자열이 등록되므로 에러가 발생하지 않지만 언급조차 되지 않을 경우 null이 되면서 400 Bad Request가 발생한다.(클라이언트 에러), 다만 빈 문자열의 경우 형변환 과정에서 에러가 발생할 수 있기 때문에 @RequestParam(defaultValue="값") 을 통해 초기값을 지정해주어야한다.(빈문자열로 받은 경우 빈문자열이 아닌 초기값으로 등록된다.)
+
+[@ModelAttribute]
+@ModelAttribute("등록할key값") Object parameter
+@ModelAttribute Object parameter
+Object parameter :
+적용 매개변수를 Model의 속성으로 자동 추가해주는 애너테이션, 반환 타입 또는 컨트롤러 메서드의 매개변수에 적용가능
+최종적으로 애너테이션까지 생략할 수 있다.
+컨트롤러 매개변수의 타입이 참조형일 경우 @ModelAttribute를 사용한다. 기본형 또는 String일 경우 @ModelAttribute를 사용할 이유가 없다.(EL로 바로 출력가능)
+참조형일 경우
+* 등록할 key값을(괄호 전체 생략) 생략하면 매개변수로 입력된 타입의 첫글자를 소문자로 한 key값이 자동 등록된다.(ex : MyDate > myDate)
+* 메서드의 반환타입 앞에 key를 꼭 포함하여 적어준다면 메서드의 호출결과를 자동으로 Model에 key값으로 저장해준다.
+* 제대로 사용한다면 입력구간의 호출 및 저장이 자동적으로 처리되므로 코드가 간단해진다.
+
+[CookieValue]
+@CookieValue("이름") String cookieId : 쿠키의 저장소에 있는 데이터 중 "이름"에 해당하는 값을 cookieId변수에 담아 넘겨준다. (JSESSIONID도 가져올 수 있다.)
+
+[@ExceptionHandler]
+@ExceptionHandler(예외종류.class) : 해당 컨트롤러를 범위로 명시된 예외의 종류 중 하나가 발생하면 예외가 발생했을 때 작성된 메서드를 실행한다. 해당 컨트롤러의 catch블록과 같다고 보면 된다. 모델 매개변수를 추가하여 작성시 모델명.addAttribute로 에러정보를 담을 수 있게된다.(예외의 종류는 { }를 이용하여 여러개를 작성할 수 있다.)
+* 에러 컨트롤러 예시(일반 로직과 동일하다)
+public String catcher(Exception ex, Model m){
+m.addAttribute("ex", ex);
+reutrn "error";
+* 생성된 모델의 매개변수는 에러가 발생한곳과 동일한 객체가 아닌, 해당 에러발생페이지에서 새롭게 생성된 객체이다.
+* jsp 지시어 중 isErrorPage를 ture로 둔다면 return값을 주지 않아도 되며, 추가적으로 모델의 매개변수를 두지 않아도 설정된 에러페이지에서 에러에 대한 내역을 기본객체(PageContext.exception)로 사용할 수 있다. 단, 상태코드는 Spring에 의해 500으로 고정(변경 불가)되니 필요시에는 사용하지 않을 수 있다.
+
+* 에러로그 설정
+프로젝트 폴더 > resources > META-INF > log4j.xml > org.springframework.web의 value값을 trace로 변경(debug와 trace가 있으며, 가장 자세한 사항을 출력하는 것이 trace)
+
+[@ControllerAdvice]
+@ControolerAdvice(패키지명) : 
+컨트롤러의 범위가 전역으로 확장된 애너테이션
+예외처리를 하는 ExceptionHandler는 기본적으로 해당 컨트롤러(클래스)의 범위까지밖에 처리하지 못한다. 하지만 @Controller를 @ControllerAdvice로 대신 선언하면 내부에 있는 @ExceptionHandler로 선언된 예외들은 글로벌하게 모든 컨트롤러에서 발생하는 예외처리를 담당하게 된다.
+* 예외처리 메서드가 중복된 경우 컨트롤러 내의(가까운) 메서드가 처리한다.
+* 패키지명은 생략이 가능하며, 패키지명 생략시 모든 패키지에 적용된다.
+
+[@ResponseStatus]
+@ResponseStatus(HttpStatus.세부내역) :
+응답 메시지의 상태 코드를 변경할 때 사용, @ExceptionHandler와 함께 사용하여 정확한 에러코드를 출력해준다.
+
+* Tomcat의 Default error는 500
+
+- 사용방법
+1. 예외처리 메서드 앞에 사용하여 예외처리가 정상적으로 되면 에러코드가 200번대로 응답되지만 해당 메서드를 사용하여 에러코드를 400 혹은 500번대로 설정할 수 있게 해준다.
+
+2. 사용자 정의 예외클래스 앞에 사용
+
+- 에러코드(HTTP response status code)별 세부내역
+> 400 : Bad Request
+> 401 : Unauthorized
+> 403 : Forbidden
+> 404 : Not Found
+> 405 : Method Not Allowed
+> 500 : Internal Server Error
+> 501 : Not implmemted
+> 503 : Service Unavailable
+등이 있다.
+
+[@NumverFormat, @DateTimeFormat]
+Formatter(양방향 변환)
+바인딩할 데이터 필드에 적용, 필드의 숫자가 적을 때 유리
+1. 날짜<>문자열 타입
+@DateTimeFormat(pattern="yyyy-MM-dd")
+private Date birth;
+
+2. 숫자<>문자열 타입
+@NumverFormat(pattern="###,###")
+BigDecimal salary;
+
+[@Valid]
+객체를 자동검증할 때 검증할 객체의 앞에 사용되는 애너테이션
+로컬 Validator와 글로벌 Validator로 나뉘어 진다.
+Validator클래스와 같이 사용되어 진다.
+
+[@Autowired / @Resource]
+직접 등록한 전역변수를 싱글톤 방식으로 사용하는 애너테이션
+생성과 소멸을 프레임워크에서 관리한다.
+* DB와 연결할 경우 close메서드는 만들필요가 없다.
+
+- 사용방법
+> Servlet-Context에서 정의하기
+<beans:bean id=" " class=" "> 내용 </beans:bean>
+
+* id는 중복방지를 위해 명시적으로 작성한다.
+* class는 사용할 실제 이름을 준다.
+* 내용으로는 매개변수의 타입을 적어준다. (없다면 생략)
+* 사용이 중복될 경우 개발자가 만든 것이 우선된다.
+* 예전버전의 경우 태그명이 다를 수 있다.
+
+> 컨트롤러에서 선언하기1 (@Autowired)
+@Autowired
+private CgvBoardDAO boardDao;
+* 외부에서의 접근을 막기위해 반드시 접근제어자는 Private와 같은 좁은 범위로 설정한다.
+
+> 컨트롤러에서 선언하기2 (@Resource)
+@Resource(name=" 등록한id ")
+* 옛 버전에서 사용되던 방식으로 현재는 잘 사용하지 않는다.

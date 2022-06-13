@@ -1,0 +1,30 @@
+<REST>
+웹서비스 디자인 아키텍쳐 접근방식
+프로토콜에 독립적이며, 주로 HTTP를 사용해서 구현
+리소스 중심의 API디자인 - HTTP메서드로 수행할 작업을 정의
+* HTTP 메서드를 GET, POST가 아닌 CRUD에 맞춰 구분하고 URI를 명사위주로 간략히 하는 것
+
+- 리소스
+/customers
+/customers/1
+/customers/1/orders
+
+- POST (C)
+/customers : 새 고객 만들기
+/customers/1 : Error
+/customers/1/orders : 고객 1에 대한 새 주문 만들기
+
+- GET (R)
+/customers : 모든 고객 검색
+/customers/1 : 고객 1에 대한 세부 정보 검색
+/customers/1/orders : 고객 1에 대한 모든 주문 검색
+
+- PUT (U)
+/customers : 고객 대량 업데이트
+/customers/1 : 고객 1이 있는 경우 고객 1의 세부 정보 업데이트
+/customers/1/orders : 고객 1의 주문 대량 업데이트
+
+- DELETE (D)
+/customers : 모든 고객 제거
+/customers/1 : 고객 1 제거
+/customers/1/orders : 고객 1의 모든 주문 제거

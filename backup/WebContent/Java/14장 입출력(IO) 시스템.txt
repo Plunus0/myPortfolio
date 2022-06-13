@@ -1,0 +1,119 @@
+[입출력 시스템 : IO]
+<스트림(Stream)>
+연속적인 데이터의 흐름 >> 데이터를 전송하는 소프트웨어 모듈
+단방향, FIFO 방식처리(First In First Out)
+입출력 장치가 다양하기 떄문에 입력과 출력에 대한 표준화를 지정하여 호환성을 갖도록 하기 위함.
+기본단위는 1바이트(8바이트) 또는 문자 2바이트 단위 이다.
+자바에서 I/O Stream 소프트웨어 모듈(Stream)을 제공한다.
+스트림끼리 연결이 가능하다.
+
+[읽기(Read)]              >>>             [쓰기(Write)]
+키보드 입력 >> 입력스트림이 읽음 >> 자바 응용프로그램 >> 출력스트림
+
+<스트림의 종류(클래스 명에 따른 분류)>
+1) 입력 스트림인지, 출력 스트림인지 ?
+- 클래스명으로 판단
+입력 : Read/Input, 출력 : Write/Output
+2) 바이트 단위인지, 문자 단위인지 ?
+- 바이트 : ~~Stream, 문자 : ~~Read/Write
+3) 기반 스트림인지, 보조 스트림인지 ?
+- File 기반인 경우 기반 스트림, 그 외는 보조
+ex) FileOutPutStream : 기반 출력 스트림
+BufferedReader : 보조 입력 스트림 (2바이트)
+
+- 바이트 스트림의 종류
+> 입력스트림
+InputStream(추상클래스)
+FileInputStream
+FilterInputStream
+BufferInputStream
+
+> 출력스트림
+OutputStream(추상클래스)
+FileOutputStream
+FilterOutputStream
+BufferOutputStream
+
+- 문자 스트림의 종류
+> 입력스트림
+Reader
+InputStreamReader : 바이트를 받아서 문자로 읽어들인다.
+FileReader
+BufferReader
+
+> 출력스트림
+Writer
+OutputStreamWriter
+FileWriter
+BufferWriter
+
+- 예외처리
+try - catch문안에 반드시 들어가야한다.
+			
+예외처리의 종류
+- FileNotFoundException
+- IOException
+- ClassNotFoundException
+
+- 표준 입출력
+System.in(키보드 입력을 콘솔로 받음)
+System.out(콘솔로 출력)
+
+- 공통 메서드
+Read/Write
+
+- 사용 후에는 반드시 클로즈 해줘야 한다.
+* 알파벳 여러개 작성 후 [Enter] 누르기 예시
+int i;
+try {
+   while((i=System.in.read( )) != -1) { // 이건 문법! 무조건 이걸로 작성
+      System.out.print(i+" : ");
+      System.out.println((char)i);}
+}catch(IOException e) {e.printStackTrace();}
+
+- Serializtion : 직렬화와 역직렬화
+객체가 생성된 후 객체의 변수값은 생명처럼 지속변경가능하다.
+어느순간 그대로 저장하거나 네트워크를 통해 어느시점의 데이터를 전송하는것.
+인스턴스 내용을 연속 스트림으로 만든 것이다.(메서드로 구현)
+
+[바이트단위 스트림]
+<InputStream>
+최상위 클래스
+
+- 주요 메서드
+> int read() : 입력스트림으로 부터 1bye(8비트)씩 읽고, 읽은 자료의 바이트를 반환
+> void close() : 입력스트림과 연결된 대상 리소스를 닫는다.
+
+- 하위 클래스
+> FileInputStream : 파일에서 바이트 단위로 자료를 읽어온다.
+
+<OutputStream>
+바이너리 타입으로 파일에 쓰고 싶을 때 바이트 단위로 쓰는 스트림의 최상위
+		
+- 생성자
+> FileOutputStream(String name) // 경로
+> FileOutputStream(String name, boolean append) // 이어쓰기
+> FileOutputStream(File f) // 파일 객체를 이용
+		
+- 주요메서드
+> void write(int b) : 현 바이트를 출력
+> void write(byte[] b) : b[]배열에 있는 값을 출력한다.(buffer)
+> void write(byte[] b, int offset, int len) : offset부터 len까지 출력한다.
+> void flush() : 출력 대기중인 문자를 강제로 비워 출력한다. (출력 대기중인 문자열은 buffer가 다 채워질때까지 출력되지 않으므로 강제 출력함)
+> void close() : 사용을 종료한다.
+
+[버퍼 입출력 스트림]
+입/출력 전에 버퍼에 채워두고, 다 채워지면 한번에 입출력처리함으로써 효율을 높이는 것
+
+- 버퍼 입출력 스트림의 생성자
+> BufferedInputStream(InputStream in) : 기본 생성자
+> BufferedInputStream(InputStream in, int size) : 버퍼의 사이즈
+		
+> BufferedOutputStream(OutputStream out) : 기본 생성자
+> BufferedOutputStream(OutputStream out, int size) : 버퍼의 사이즈
+
+- 버퍼 입출력 스트림의 사용법
+> BufferedReader(Reader in)
+> BufferedReader(Reader in, int size)
+> BufferedWriter(Writer in)
+> BufferedWriter(Writer in, int size)

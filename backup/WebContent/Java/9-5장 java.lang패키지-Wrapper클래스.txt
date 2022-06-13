@@ -1,0 +1,27 @@
+<wrapper : 래퍼클래스>
+8개의 기본형을 객체로 다뤄야할 때 사용하는 클래스
+Boolean / Character / Byte / Short / Integer / Long / Float / Double
+
+- Number클래스
+모든 숫자 래퍼클래스의 조상(추상클래스)
+
+- 문자열을 숫자로 변환하기
+int i = new Integer("100").intValue( );
+int i2 = Integer.parseInt("100");
+Integer i3 = Integer.valueOf("100");
+Integer i4 = new Integer("100");
+*대부분 문자열을 받는 생성자가 있음
+
+- 래퍼클래스를 문자열로 변경 : toString( ) 사용
+
+- n진법의 문자열을 숫자로 변환하기(뒤에 변환하려는 매개변수가 없으면 기본적으로 10진수로 인식)
+int i = Integer.parseInt("100", 2) // 2진수인 100을 변환
+int i = Integer.parseInt("100", 8) // 8진수인 100을 변환
+int i = Integer.parseInt("100", 16) // 16진수인 100을 변환
+
+<오토박싱&언박싱>
+JDK 1.5이전에는 기본형과 참조형간의 연산이 불가능했으나 현재는 가능하다.
+Integer intg = (Integer)i;
+Object obj = (Object)i;
+Long lng = 100L;
+등의 형변환이 생략된 코드를 자동으로 컴파일해서 적용

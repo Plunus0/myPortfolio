@@ -1,0 +1,69 @@
+<GitHub>
+형상관리서버의 일종
+
+<Repository 생성 및 동기화>
+1. GitHub가입 후 토큰생성
+계정설정(settings) > developer settings > Personal access tokens > Note(이름) Expiration(기간) Select scopes(권한) : repo > 생성 > 토큰주소 확인
+
+2. Repository 생성
+- create repository
+- Repository name 작성 / Public 체크 후 생성
+- HTTPS 주소 복사
+
+3. 프로젝트 생성
+- 프로젝트 생성
+- Window > Show View > Git Repositories 클릭
+- Create a new local Git repository (local git 저장소를 새로 생성) : 경로를 설정하고 생성한다.
+- 이그노어파일 생성
+이그노어 파일은 툴에서 생성되는 메타파일이나 로그파일이 시스템마다 달라서 충돌이 발생할 수 있기에. 확장자를 가진 파일은 제외을 제외하고 깃허브에 push, pull 시키기 위한 파일이다.
+https://www.toptal.com/developers/gitignore
+* 운영체제, 개발환경(IDE), 프로그래밍 언어로 검색
+
+- 이그노어파일 저장
+깃허브 레파지토리 생성-> 생성한 프로젝트 push-> 폴더 최상단에 이그노어 파일 생성 후(.gitignore, 
+Create .gitignore) git에 전체 팀 공유
+* 파일 삭제할때는 깃에서 삭제
+
+4. local git 저장소에 프로젝트 연결
+프로젝트 우클릭 Team > Share Project > 저장될 local git 저장소를 선택 > 완료
+
+5. local git 저장소에 프로젝트 파일 동기화
+프로젝트 우클릭 Team > Commit > 업로드할 파일을 선택 및 Message 작성 후 Commit 실행
+
+6. GitHub Repository에 파일 동기화
+프로젝트 우클릭 > Team > Push Branch 'master' > Remote name (이름), URI (HTTPS 주소), 토큰 > 다음 > 다음 > User (Git아이디), Password (토큰주소) > Push
+
+7. 일부 파일 동기화
+미동기화 상태 파일('?'표시) 우클릭 > Team > Commit으로 local Repository와 GitHub Repository에 동기화를 진행한다.
+
+<외부 Repository 연결하기>
+- Window > Show View > Git Repositories 클릭
+
+- Clone Git Repository (외부 Repository를 복사) : URI( HTTPS 주소), User (배포자 ID), Password (토큰주소) > > 다음 > 다음 > 
+
+File > import > Git 폴더 Project from Git > Clone URI > URI( HTTPS 주소), User (배포자 ID), Password (토큰주소) > > 다음 > 다음 > 저장할 위치 설정 후 완료
+
+<외부 Repository에서 내려받기>
+- Git과 연결된 프로젝트 우클릭 > Team > Pull... > 내려받을 파일 설정
+
+<local Repository에 올리기>
+미동기화 상태 파일('?'표시) 우클릭 > Team > Commit으로 local Repository와 GitHub Repository에 동기화를 진행한다.
+
+<외부 Repository에 올리기>
+local Repository에 Commit진행 (Push to Origin, Commit 둘다 적용)
+Staged Changes 상태로 등록
+그래도 안되면 Pull 한번 하고 진행
+- 프로젝트 우클릭 > Team > Push Branch 'Master' 후 업로드
+
+<깃헙 연결>
+https://github.com/choonsikLove/repository1
+coalal829@naver.com
+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
+
+https://github.com/leekm123/mytest_repository.git
+lkm1401@daum.net
+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
+
+https://github.com/Plunus0/myPortfolio.git
+ydh5527@naver.com
+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

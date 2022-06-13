@@ -1,0 +1,231 @@
+<Class>
+클래스에 관련된 주요 정보들을 다룰 수 있다.
+
+- Class클래스의 주요 메서드
+> Class.forName("클래스이름") : 클래스 이름으로 Class 객체를 생성한다.
+* 클래스이름은 패키지의 이름을 포함한 풀네임
+> newInstance( ) : Class객체가 가진 정보로 객체 생성(Object로 리턴하기에 해당 클래스로 형변환 필요)
+> getDeclaredMethod("메서드명") : 메서드명의 정보를 반환, 뒤에 매개변수의 type을 작성하여 메서드를 특정할 수 있다.
+* 반환타입은 Method[ ] 배열
+> A객체.class.isAssignableFrom(B객체) : B객체가 A 또는 그 자손인지 확인 (instanceof와 비슷하다, equals로 대체 가능)
+
+<Method>
+메서드에 관련된 주요 정보들을 다룰 수 있다.
+java.lang.reflect.Method에 속해있다.
+
+- Method클래스의 주요 메서드
+> getName( ) : 메서드의 이름
+> getParameters( ) : 메서드의 매개변수 목록을 반환
+* 반환타입은 Parameter[ ] 배열
+> getParameterCount( ) : 매개변수 갯수와 같은 길이의 Object 배열을 반환
+> getReturnType( ) : 메서드의 반환타입을 반환
+* 반환타입은 Class 객체
+> getReturnType( ) : 메서드들의 반환타입을 반환
+* 반환타입은 Class[ ] 배열
+> setAccessible( ) : private인 메서드의 호출 가능여부를 설정 (true/false)
+> invoke(Class class) : class객체가 가지고 있는 메서드를 호출, 두번째 매개변수로 해당 메서드의 매개변수를 입력가능
+
+<Parameter>
+
+- Parameter클래스의 주요 메서드
+> getType( ) : 매개변수의 타입을 반환
+* 반환타입은 Class 객체
+> getName( ) : 매개변수의 이름을 반환
+* 기본적으로 컴파일러에게 매개변수의 이름은 중요치 않다. arg0 ... 등으로 변경되서 반환된다.
+* 매개변수의 이름을 제대로 출력하려면 Preferences설정과 JRE System Libarary 설정을 변경해줘야한다.
+* Preferences > compil검색 > Compiler > Classfile Generation > Store information about method parameters를 체크 (Compiler compliance level 1.8이상)
+* 프로젝트폴더 > target > pom.xml > properties tag > java-version 1.8이상 입력 > plugin tag > source, target tag > ${java-version}
+
+<Model>
+Model은 매개변수로 지정시 자동으로 생성해주지만 직접 생성할 수도 있다. 다만 인터페이스인점을 감안해야한다.
+
+- Model의 생성자
+Model m = new BindingAwareModelMap( )
+* Model의 구현체
+
+- Model의 주요 메서드
+- asMap( ) : 객체를 Map으로 변환 후 반환
+
+<URLEncoder / URLDecoder>
+java.net.URLEncoder / URLDecoder에속해있는 클래스
+문장을 인코딩/디코딩할때 사용한다, 예외처리가 필요하다.
+* 보통 서버나 Tool에서 인코딩을 해주지만 URL재작성(rewriting) 시 에는 추가가 필요하다.
+
+- 주요 메서드
+URLEncoder.encode(String str, "인코딩종류") : str을 인코딩한다.
+URLDecoder.decode(String str, "인코딩종류") : str을 디코딩한다.
+
+<WebDataBinder>
+요청받은 데이터를 매개변수의 값에 저장할 때 사용하며, 반드시 바인딩한 객체의 뒤쪽에 위치해야한다.
+데이터의 타입변환, 데이터검증 그 결과와 에러내역을 보관하며 컨트롤러에게 데이터를 넘겨 줄 수 있다.
+* 왠만한 데이터는 스프링에서 자동적으로 형변환이 이루어지지만 날짜는 형식이 워낙 다양하기 때문에 가급적 수동으로 형변환을 해주어야한다.(애너테이션 또는 메서드)
+
+- 사용방법1(바인딩할 객체의 뒤쪽에 BindingResult result를 위치)
+* public String main(Object obj, BindingResult result)
+
+- 사용방법2(@ExceptionHandler의 예외처리 메서드의 매개변수)
+FieldError 변수명 = 파라미터.getFieldError( ) : FieldError를 변수에 담아 내용을 확인한다.
+
+FieldError의 주요 메서드
+getCode( ) : 에러가 발생한 에러코드를 반환
+getField( ) : 에러가 발생한 필드값을 반환
+getDefaultMessage( ) : 에러가 발생한 사유에 대한 메세지를 반환
+
+- 자동형변환이 불가한 데이터의 수동형변환 메서드(컨트롤러에 추가만 해주면 적용됨)
+1. PropertyEditor(양방향 변환)
+public void 메서드명(WebDataBinder binder){
+SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd"); // 날짜를 입력받는 양식
+binder.registerCustomEditor(Date.class, new CustomDateEditor(df, false)); // 입력받은 변수(df)를 날짜 형식으로 변경
+binder.registerCustomEditoer(String[].class, new String ArrayPropertyEditor("구분자")); // 입력받은 데이터 중 구분자를 사용하여 문자배열형식으로 변경
+* registerCustomEditoer의 중간에 필드을 넣어 특정 필드만 해당하도록 지정해줄 수 있다.
+* 스프링이 기본적으로 제공하는 Default PropertyEditor와 사용자가 직접 구현(PropertyEditorSupport 상속)하는 커스텀 PropertyEditor가 있다.
+
+* 모든 컨트롤러 내에서 변환 : ConfigurableWebBindingInitializer를 설정
+* 특정 컨트롤러 내에서 변환 : 컨트롤러에 @InitBinder가 붙은 메서드 작성
+
+2. Converter(단방향 변환)
+PropertyEditor의 단점 개선(stateful > stateless)
+public class StringToStringArrayConverter implements Converter<String//변환전타입, String[]//변환후타입>{
+@Override
+public String[] convert(String source){
+return source.split("구분자");}}
+
+* ConversionService - 타입변환 서비스를 제공하며 이곳에 등록가능
+WebDataBinder에 DefaultFormattionConversionService이 기본드록
+* 모든 컨트롤러 내에서 변환 : ConfigurableWebBindingInitializer를 설정
+* 특정 컨트롤러 내에서 변환 : 컨트롤러에 @InitBinder가 붙은 메서드 작성
+
+3. Formatter(양방향 변환)
+바인딩할 데이터 필드에 적용, 필드의 숫자가 적을 때 유리
+1. 날짜<>문자열 타입
+@DateTimeFormat(pattern="yyyy-MM-dd")
+private Date birth;
+
+2. 숫자<>문자열 타입
+@NumverFormat(pattern="###,###")
+BigDecimal salary;
+
+<Errors>
+에러발생시 에러메세지 내역을 저장하는 인터페이스, Binding Result의 조상이다.
+
+- Errors의 주요 메서드
+> void reject(String errorCode) : 객체 전체에 대한 에러코드를 저장
+> void rejectValue(String field, String errorCode) : 필드별로 에러를 저장
+> void ValidationUtils.rejectIfEmptyOrwhitespace(Errors errors, String field, String errorCode) : null이거나 공백일때 해당 필드에 에러코드를 errors에 저장한다.
+* 마지막에 String으로 Default message를 줄 수 있다.
+
+<Validator>
+객체를 검증하기 위한 인터페이스, 객체 검증기 구현에 사용
+검증이라는 관심사를 분리할 때 유용하다.
+에러 발생시 내역을 <form:errors>를 통해 확인할 수 있다.
+
+- 사용 예시1 (수동검증 : 원하는 데이터를 지정)
+객체를 생성하고, 메서드를 호출한다.
+UserValidator userValidator = new UserValidator();
+userValidator.validate(user, result) // validaor로 검증
+if(result.hasErrors( ) ){
+return "registerForm";} 에러가 있으면 registerForm 반환
+
+- 사용예시2 (자동검증 : 해당 컨트롤러 내 @Valid를 사용하여 검증)
+@InitBinder로 등록된 메서드 내부에 WebDataBinder객체명.setValidator(Validator객체)를 등록하여 해당 Validator를 WebDataBinder의 로컬 validator로 등록한다.
+이후 검증할 객체의 매개변수 선언한 앞에 @Valid 애너테이션을 선언한다.
+* @Valid애너테이션은 자바 표준 애너테이션으로 target 폴더의 pom.xml에 Maven repository > Bean Validation API를 가져와 붙여넣기한다.(이후 Maven > Update Project 필요)
+
+@InitBinder
+public void toDate(WebDataBinder binder){
+SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd)";
+binder.registerCustomEdito(Date.class, new CustomDateEditor(df, false);
+
+binder.setValidator(new UserValidator( )); // validator를 WebDataBinder에 등록
+
+List(Validator> validators = Binder.getValidators( );
+System.out.println("validators="+validators);}
+
+@PostMapping("/register/add") // 신규회원등록
+public String save(Model m, @Valid User user, BindingResult result) // 검증할 객체 앞에 @Valid 애너테이션을 붙인다. {
+if(result.hasErrors()){ // 에러가 있으면
+return "registerForm";} // 다시 초기화면으로
+
+- 사용예시3 (자동검증 : 하나의 Validator로 여러 객체를 검증할 때 글로벌 Validator로 등록 후 @Valid를 사용하여 검증)
+> Servlet-context.xml에 등록한다.
+<annotation-driven validator="globalValidator"/>
+<beans:bean id="globalValidator" class="패키지명.class명"/> // 빈등록
+이후 검증할 객체에 @Valid를 붙인다.
+
+- 사용예시4 (글로벌Validator(자동) + 로컬Validator(수동)를 동시에 적용)
+글로벌 Validator를 등록 후
+binder.addValidators(new UserValidator( )); 사용 // set이 아닌 add, 뒤에 s가 붙는다.
+
+- 주요메서드
+> boolean supports(Class<?> clazz) : 이 검증기로 검증 가능한 객체인지 알려주는 메서드
+> void validate(@Nullable Object target, Errors errors) : 객체를 검증하는 메서드 (target : 검증할 객체, errors : 검증시 발생한 에러저장소)
+
+- 주요메서드 Override 예시
+public class UserValidator implements Validator{
+@Override
+public boolean supports(Class<?> clazz){
+return User.class.isAssignableFrom(clazz)}
+
+@Override
+public void validate(Object target, Errors errors){
+User user = (User)target // supports로 형변환 가능여부를 검증했기에 instanceof는 생략
+String id = user.getId( );
+
+if(id == null || "".equals(id.trim())){
+errors.rejectValue("id","required");} // // id가 null이거나 공백일때 required라는 에러코드를 errors에 저장
+
+ValidationUtils.rejectIfEmptyOrwhitespace(errors,"id","required");
+// id가 null이거나 공백일때 required라는 에러코드를 errors에 저장(위와 같다)
+ValidationUtils.rejectIfEmptyOrwhitespace(errors,"pwd","required");
+// pwd가 null이거나 공백일때 required라는 에러코드를 errors에 저장
+
+if(id=null || id.length( ) < 5 || id.length( ) > 12){
+errors.rejectValue("id", "invalidLength");}
+// id가 null이거나 길이가 5~12사이가 아닐때 invalidLength라는 에러코드를 errors에 저장
+
+* 에러코드는 객체이름과 필드이름, 타입까지 상세히 적어줄 수 있다.
+
+- 에러코드의 종류 (에러코드 자체가 아닌 맵핑되어있는 메세지가 출력된다.)
+ 
+<MessageSource>
+다양한 리소스에서 메시지를 읽기 위한 인터페이스(리소스는 파일, 배열 등 다양하다.)
+실제 활용을 위해선 REsourceZBundleMessageSource 구현체(프로퍼티 파일을 메시지 소스로 사용)를 bean으로 등록해야 한다. (servlet-context에 추가)
+
+- 주요 메서드
+public interface MessageSource{
+String getMessage(String code, Object[ ] args, String defaultMessage, Locale locale)
+String getMessage(String code, Object[ ] args, Locale locale) throws NoSuchMessageException
+String getMessage(MessageSourceResolvable resolvalbe, locale locale) throws NoShchMessageException
+* String code : 에러코드명
+* Object[ ] args : 파일 내 포맷팅 단어를 대입
+* Locale : 지역정보(지역별 다른 메세지 파일을 사용할 수 있다.)
+* DefaultMessage : 해당 코드에 따른 메시지가 없을 경우 표기할 메세지
+
+- 프로퍼티 파일 추가
+프로젝트 소스 > main > resources 폴더 내 > 파일명.properties 생성 // servlet-context에 추가할 태그와 파일이름이 일치해야한다.
+* 파일명_ko.properties, 파일명_en.properties 등 국가별로 메시지 설정가능
+
+- 프로퍼티 파일 내용 예시(메시지코드(key)와 메세지(value)로 이루어져있다.)
+required = 필수 항목입니다.
+required.user.pwd = 사용자 비밀번호는 필수 항목입니다.
+invalidLenth.id = 아이디의 길이는 {1}~{2}사이어야 합니다.
+* fomatting기능 사용 가능
+* * 에러코드는 객체이름과 필드이름, 타입까지 상세히 적어줄 수 있다.
+
+- servlet-context에 빈 태그 추가 예시
+<beans:bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+<beans:property name="basenames">
+<beans:list>
+<beans:value>파일명</beans:value> // 실제 파일 이름과 일치해야한다.
+<!-- /src/main/resources/파일명.properties -->
+</beans:list>
+</beans:property>
+<beans:property name="defaultEncoding" value="UTF-8"/>
+</beans:bean>
+
+<UUID>
+랜덤한 64bit의 코드를 생성하는 클래스
+
+- 생성방법 & 주요 메서드
+UUID uuid = UUID.randimUUID( );
+

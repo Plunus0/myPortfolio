@@ -1,0 +1,64 @@
+<람다식(Lambda Expression)>
+함수(메서드)를 간단한 '식(expression)'으로 표현하는 방법
+익명 함수(이름이 없는 함수, anonymous functiom)
+함수와 메서드의 차이
+근본적으로 동일. 함수는 일반적 용어, 메서드는 객체지향개념 용어
+함수는 클래스에 독립적, 메서드는 클래스에 종속적
+
+- 람다식 작성하기
+1. 메서드의 이름과 반환타입을 제거하고 '->'를 블록{ } 앞에 추가한다.
+2. 반환값이 있는 경우, 식이나 값만 적고 return문 생략 가능(끝에 ';' 안붙임)
+3. 매개변수의 타입이 추론 가능하면 생략가능(대부분의 경우 생략가능)
+*주의사항
+1. 매개변수가 하나인 경우, 괄호( ) 생략가능(타입이 없을 때만)
+2. 블록 안의 문장이 하나뿐 일 때, 괄호 { } 생략가능(끝에 ';' 안 붙임)
+단, 하나뿐인 문장이 return문이면 괄호{ } 생략불가
+
+- 람다식은 익명함수가 아니라 익명객체이다.
+람다식(익명객체)을 다루기 위한 참조변수(함수형 인터페이스)가 필요
+
+<함수형 인터페이스>
+함수형 인터페이스 - 단 하나의 추상 메서드만 선언된 인터페이스
+* 함수형 인터페이스 애너테이션을 붙여주면 컴파일 해준다
+* 함수형 인터페이스 타입의 참조변수로 람다식을 참조할 수 있음 (단, 함수형 인터페이스의 메서드와 람다식의 매개변수 개수와 반환타입이 일치해야함)
+
+- 항등함수
+x -> x ; : x값이 그대로 출력(항등함수)
+
+- 컬렉션 프레임웍과 함수형 인터페이스 : 함수형 인터페이스를 사용하는 컬렉션 프레임웍의 메서드(와일드 카드 생략)
+[Collection]
+> boolean removeif(Predicate<E> filter) : 조건에 맞는 요소를 삭제
+[List]
+> void replaceAll(UnaryOperator<E> operator) : 모든 요소를 변환하여 대체
+[Iterable]
+> void forEach(Consumer<T> action) : 모든 요소에 작업 action을 수행
+[Map]
+> V compute (K key, BiFunction<K,V,V> f) : 지정된 키의 값에 작업 f를 수행
+> V computeifAbsent(K key, Function<K,V> f : 키가 없으면, 작업 f 수행 후 추가
+> V computeifPresent(K key, BiFunction<K,V,V> f) : 지정된 키가 있을 때, 작업 f 수행
+> V merge(K key, V value, BiFunction<V,V,V> f) : 모든 요소에 병합작업 f를 수행
+> void forEach(BiConsumer<K,V> action) : 모든 요소애 작업 action을 수행
+> void replaceAll(BiFuntion<K,V,V> f) : 모든 요소에 치환작업 f를 수행
+
+- 메서드 참조(method reference)
+하나의 메서드만 호출하는 람다식은 '메서드 참조'로 간단히 할 수 있다.
+* static메서드 참조
+1. 
+(x)->ClassName,method(x)
+ClassName :: method
+2. 
+Function<String, Integer> f = Interger : : parseInt
+
+* 인스턴스메서드 참조
+(obj, x) -> obj.method(x)
+ClassName::methd
+
+* 생성자와 메서드 참조
+Function<Interger, Myclass> s = Myclasss : : new;
+
+* 배열과 메서드 참조
+Function<Integerm int[ ] f2 = int[ ] : : new ;
+
+* 특정 객체 인스턴스메서드 참조(거의 안씀)
+(x) -> obj.nethod(x)
+obj :: method

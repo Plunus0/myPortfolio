@@ -1,0 +1,62 @@
+<Servlet>
+자바를 사용하여 웹페이지를 동적으로 생성하는 서버측 프로그램 등을 말한다.
+자바 서블릿은 웹 서버의 성능을 향상하기 위해 사용되는 자바 클래스의 일종이다.
+서블릿은 JSP와 비슷한 점이 있지만, JSP가 HTML 문서 안에 Java 코드를 포함하고 있는 반면, 서블릿은 자바 코드 안에 HTML을 포함하고 있다
+서블릿을 좀 더 발전시킨게 Spring이다.
+확장자는 .java 이며 실행순서는 .java(소스코드) > 컴파일러 > .class(바이트코드) > 인터프리터 > 실행
+* 실행방법이 java와 같기 때문에 JAVA SE가 기본적으로 필요하다.
+* 소스코드는 개발자가 알아볼 수 있지만, 바이트코드는 알아볼 수 없다.
+
+<Servlet 사용 문법>
+도입부를 제외한 부분은 대체적으로 유사하나 @Controller 어노테이션이 좀 더 발전된 문법이다.(어노테이션이 구분되어있고, 상속이 필수가 아니며, 매개변수 또한 선택적으로 사용이 가능하다.)
+Servlet은 javax.servlet.http.HttpServlet에 속해있다.
+
+- 문법 예시
+@WebServlet("URL주소")
+public class 클래스명 extends HttpServlet
+@Override
+public void service(HttpServletRequest  request, HttpServletResponse response)
+@WebServlet("URL주소")
+
+> @WebServlet("URL주소") :
+@Controller+@RequestMapping을 합친 어노테이션
+여러개의 URL을 입력할 수 있다.
+* @WebServlet(urlPatterns={"/hello","/hello/*"}, loadOnStartup=1)
+서블릿은 기본적으로 Lazy init(늦은 초기화)지만 우선순위를 설정하여 미리 초기화를 해둘 수 있다. (loadOnStartup=1)
+
+> public class 클래스명 extends HttpServlet : 서블릿은 무조건 HttpServlet를 상속받아 사용한다.
+> public void service(HttpServletRequest  request, HttpServletResponse response) : 서블릿 사용시 무조건 service 메서드를 오버라이드해서 사용한다. 매개변수도 request와 response가 고정으로 있어야한다.
+
+<Servlet의 주요 메서드/생명주기>
+Servlet은 상속받아 사용할 수 있으므로 해당 메서드를 오버라이드해서 사용한다.
+모든 메서드들은 상황에따라 서블릿 컨테이너에 의해서 자동으로 호출된다.
+
+* Servlet 오버라이딩 메서드 선택 방법
+Servlet을 상속받은 클래스를 선택(드래그) 후 Source > Override/Implement Methods .. > HttpServlet > service(HttpServletRequest, HttpServletResponse) 선택 > GenericServlet > init( ), destroy( ) 선택
+
+1. 서블릿 초기화 메서드 : 서블릿이 생성 또는 리로딩 때, 단 한번만 수행(서블릿 객체는 싱글톤 객체, 다중 생성이 되지 않음, 서블릿 객체의 존재유무 확인은 ServletContext의 Children 인스턴스변수(map)에 등록이 되어있다.)
+@Override
+public void init( ) thorws ServletException{ };
+
+2. 서블릿 작업처리 메서드 : 호출될 때마다(새로고침 등) 반복적으로 수행(실행 시 1.입력, 2.처리, 3. 출력 단계로 나눌 수 있다.)
+@Override
+public void service(HttpServletRequest request, HttpServletResponse response){ }
+
+3. 서블릿 뒷정리 메서드 : 서블릿이 제거(unload)될 때, 단 한번만 수행
+@Override
+public void destroy( ) { }
+
+<URL 패턴>
+@WebServlet으로 서블릿을 URL에 맵핑할 때 사용하는 패턴의 종류(URL주소 입력시 가장 일치하는 패턴을 우선적으로 찾아준다.)
+1. exact mapping(정확함 기준) : 경로, 파일명, 확장자명이 정확히 일치(/경로명/파일명.확장자), 동적 리소스
+2. path mapping(경로 기준) : 경로가 일치(/경로/*), 동적 리소스
+3. extension mapping(확장자명 기준) : 확장자명이 일치(*.확장자), 동적 리소스
+4. default mapping(기본값) : 모든 주소(/), 정적 리소스
+
+* Spring은 Default를 처리하는 DispatcherServlet이 URL패턴을 기본적으로 갖고 있어서 별도로 등록하지 않아도 된다.
+* Spring의 DispatcherServlet 확인방법
+1. 전체설정 : Servers > Tomcat설치폴더 > web.xml > servlet 태그
+2. 개별설정 : 프로젝트 폴더 > src > main > webapp >WEB-INF > web.xml > servlet 태그
+
+- Servlet Context
+클라이언트로부터 요청이 들어오면 children(서블릿 객체 Map)과 servletMappings(URL패턴 Map) 멤버를 가지고 있다가 1차적으로 servletMappings에서 해당하는 URL패턴을 확인 후 URL패턴과 일치하는 등록된 서블릿 객체를 children으로부터 찾아서 요청을 전달해준다.

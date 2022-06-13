@@ -1,0 +1,157 @@
+<MyBatis>
+ORM(Object Relation Mapping) 내부에 있다.
+SQL Mapping Framework으로 자바코드와 SQL를 쉽게 맵핑해준다.
+DAO에서 SQL은 XML로 분리해서 관리하고 DAO는 인터페이스로 관리
+매개변수 설정과 쿼리 결과를 읽어오는 코드를 제거
+Controller는 서비스 인터페이스와 서비스인풋으로 분리
+작성할 코드가 줄어서 생산성 향상&유지 보수 편리
+* MyBatis는 Spring없이 단독 사용이 가능하고(JDBC활용) Spring과 같이 사용할땐 mybatis-spring을 같이 설치해야한다.
+
+- 사용방법
+1. main > resources폴더 아래 mapper 폴더와 mybatis-config.xml 파일을 만든다.
+* mapper폴더는 sql이 들어갈 xml파일을 보관하는 장소
+
+2. Mybatis 모듈 입력
+Maven Repository > MyBatis, MyBatis Spring API 복사 > pom.xml에 붙여넣기
+
+* Mybatis 모듈
+<!-- https://mvnrepository.com/artifact/org.mybatis/mybatis -->
+		<dependency>
+			<groupId>org.mybatis</groupId>
+			<artifactId>mybatis</artifactId>
+			<version>3.5.9</version>
+		</dependency>
+* MyBatis Spring 모듈
+<!-- https://mvnrepository.com/artifact/org.mybatis/mybatis-spring -->
+		<dependency>
+			<groupId>org.mybatis</groupId>
+			<artifactId>mybatis-spring</artifactId>
+			<version>2.0.7</version>
+		</dependency>
+
+<SqlSessionFactoryBean과 SqlSessionTemplate>
+
+* dbcp 모듈
+		<!-- DBCP -->
+		<dependency>
+			<groupId>commons-dbcp</groupId>
+			<artifactId>commons-dbcp</artifactId>
+			<version>1.4</version>
+		</dependency>
+
+- MyBatis 모듈 제공
+> SqlSessionFactory : SqlSession을 생성해서 제공하는 인터페이스
+> SqlSession : Sql명령을 수행하는데 필요한 메서드 제공하는 인터페이스
+
+
+- MyBatis Spring 모듈 제공
+> SqlSessionFactoryBean : SqlSessionFactory를 Spring에서 사용하기 위한 빈
+> SqlSessionTemplate : Sql명령을 수행하는데 필요한 메서드를 제공, thread-safe라서 멀티쓰레드에 안전하기에 여러 DAO가 공유해도 괜찮다.
+* SqlSeeion과 SqlSessionFactory 인터페이스를 구현한 구현체이다.
+
+- SqlSessionFactoryBean과 SqlSessionTemplate 빈 등록 : root-context에 등록하며, Mapper.xml의 위치를 지정해주어야 한다.
+* 추가로 DB의 정보를 등록할 수 있다.
+
+> DB정보 빈 등록
+	<!-- MyBatis -->
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
+  <property name="driverClassName" value="oracle.jdbc.driver.OracleDriver" />
+  <property name="url" value="jdbc:oracle:thin:@localhost:1521:XE" />
+  <property name="username" value="scott" />
+  <property name="password" value="tiger" />
+ </bean>
+
+> SqlSessionFactoryBean과 SqlSessionTemplate 빈 등록 예시
+<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource"/>
+		<property name="configLocation"  value="classpath:mybatis-config.xml"/>
+		<property name="mapperLocations" value="classpath:mapper/*Mapper.xml"/>
+	</bean>
+
+	<bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg ref="sqlSessionFactory"/>
+	</bean>
+
+
+
+- SqlSession의 주요메서드 : 
+모든 Object parameter는 맵핑할 값이 없다면 생략이 가능하다.
+쿼리문과 리턴타입을 확인하여 사용할 메서드를 결정한다.
+insert, delete, update는 resultType을 생략할 수 있다.( 모든 반환타입이 int기 때문에)
+
+> int insert(String statement, Object parameter) : insert문을 실행하고, insert된 행의 갯수를 반환
+
+> int delete(String statement, Object parameter) : delete문을 실행하고, delete된 행의 갯수를 반환
+
+> int update(String statement, Object parameter) : update문을 실행하고, update된 행의 갯수를 반환
+
+> T selectOne(String statement, Object parameter) : 하나의  행을 반환하는 select에 사용 parameter로 SQL에 binding될 값 제공
+
+> List<E> selectList(String statement, Object parameter) : 여러 행을 반환하는 select에 사용 parameter로 SQL에 binding될 값 제공
+* List로 자동 변환하여 반환하기 때문에 mapper.xml의 반환타입은 VO객체로 진행한다. (다만, DAO의 반환타입을 맞춰줘야한다.)
+
+> Map<K, V> selectMap(String statement, String KeyCol, Object parameter) : 여러 행을 반환하는 select에 사용 keyCol에 Map의 Key로 사용할 컬럼 지정
+
+<Mapper.XML 작성>
+각 기능별로 Mapper.xml 파일을 작성한다.
+sql문과 이름, 파라미터타입(없는 경우 생략 가능, 필드는 EL로 불러온다.), 반환타입을 만들어 놓고 호출시 해당하는 이름으로 불러온다.
+* 파라미터 또는 반환타입이 클래스일 경우 패키지명까지 적어준다. (map의 경우 map으로 바로 사용가능)
+* 호출 시 namespace가 일치해야한다.
+* 추후 Mapper인터페이스로 더 간단히 사용 가능
+* 매개변수가 2개 이상일 경우 반드시 객체(Hashmap)로 만들어 전송한다.
+* Mapper.xml 예시
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mapper.member">
+	<!-- 회원 가입시 아이디 중복체크 -->
+	<select id="id_check" parameterType="java.lang.String" resultType="int">
+		select count(*) from cgv_member where id=#{id}
+	</select>
+</mapper>
+
+- <typeAliases>로 파라미터/리턴 등 이름 짧게하기 : https//mybatis.org/mybatis-3/configuration.html#typeAliases
+빌트인된 별명들 외에도 src > main > resources > mybatis0config.xml에서 지정해줄 수 있다.
+* 코드 예시 (실제이름은 대소문자를 구분하지만 별명은 대소문자를 구분하지 않는다.)
+<typeAliases>
+	<typeAlias alias="별명" type="패키지명.실제이름"/>
+	...
+</typeAliases>
+
+- DAO 실행 예시
+@Autowired
+private SqlSessionTemplate sqlSession;
+	
+private String namespace = "mapper.member";
+
+public int idCheck(String id) {
+return sqlSession.selectOne(namespace+".id_check", id);}
+
+[컨트롤러의 서비스 분리]
+서비스 패키지 생성 후 서비스 인터페이스 생성
+해당 인터페이스를 구현하는 클래스 생성(impl)
+servlet-context.xml에서 애너테이션으로 생성(인터페이스를 사용하지 못하기에 구현한 클래스가 있어야한다.)
+컨트롤러에서 @Autowired로 구현한 애너테이션을 선언하고 사용한다.
+
+[MyBatis로 DAO작성]
+1. DB테이블 생성
+2. Mapper XML & DTO작성
+* Mapper XML 태그 작성
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="실제이름">
+* #{ }와 ${ }의 차이
+#{ }는 PreparedStatement로 변환되고, ${ }는 Statement로 변환된다. 가급적 #{ }를 사용한다. (유연할 수 있으나 내부적인 경우에만 사용)
+*  XML 내의 특수문자(<, >, & ...) 작성 필요시 엔티티코드로 작성하거나 특수문자가 포함된 쿼리를 <![CDATA[ 쿼리내용 ]]> 로 감싼다.
+* DTO작성시 DB COLUMN과 동일한 이름으로 매칭시켜준다. ( 추후 from 태그의 name도 동일하게 작성한다.)
+
+3. DAO인터페이스 작성
+* DAO인터페이스 구현시 Extract 기능을 활용하여 인터페이스 작성을 자동생성할 수 있다.
+4. DAO인터페이스 구현 & 테스트
+4-1. @Autowired를 이용하여 SqlSession session 객체를 생성
+4-2. throws Exception을 통해 Controller에서 예외처리를 하도록 설정
+4-3. session객체의 메서드를 사용하며 Mapper.XML의 전체 이름을 작성해주어야한다. (이름의 앞부분은 변수에 담아서 사용하는게 일반적)
